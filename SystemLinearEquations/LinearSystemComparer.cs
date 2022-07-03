@@ -1,6 +1,4 @@
-using System;
 using System.Diagnostics;
-using System.IO;
 using Maths.LinearAlgebra;
 
 namespace Maths;
@@ -115,7 +113,7 @@ public static class LinearSystemComparer
             if (includeCramers)
             {
                 sw.Start();
-                exact = LinearSystemSolver.FindLinearSystemSolution_Exact(m1, b1);
+                exact = LinearSystemAlgorithms.CramersRuleModified(m1, b1);
                 sw.Stop();
                 exactTime = sw.Elapsed;
                 Console.WriteLine("Approx: " + exactTime);
@@ -127,7 +125,7 @@ public static class LinearSystemComparer
             }
 
             sw.Restart();
-            var approx = LinearSystemSolver.FindLinearSystemSolution_Approx(m1, b1);
+            var approx = LinearSystemAlgorithms.ConjugateTransposeMethod(m1, b1);
             sw.Stop();
 
             //Console.WriteLine("Approx: " + approx);

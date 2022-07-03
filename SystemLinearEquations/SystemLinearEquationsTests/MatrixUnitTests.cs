@@ -1,5 +1,4 @@
 ﻿using Maths.LinearAlgebra;
-using Xunit;
 
 namespace MathTests.LinearAlgebra;
 

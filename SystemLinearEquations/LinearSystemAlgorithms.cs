@@ -1,7 +1,6 @@
-﻿using System;
-namespace Maths.LinearAlgebra;
+﻿namespace Maths.LinearAlgebra;
 
-public static class LinearSystemSolver
+public static class LinearSystemAlgorithms
 {
     private static readonly int _precision = Global.Precision;
 
@@ -10,7 +9,7 @@ public static class LinearSystemSolver
     //      this requires the determinant of the input matrix to be non zero
     //
     // O((n+1)*2.2n + n(2n)) ~ O(n^2)
-    public static double[] FindLinearSystemSolution_Exact(Matrix A, double[] b)
+    public static double[] CramersRuleModified(Matrix A, double[] b)
     {
         // a11X1 + a12X2 + ... + a1nXn = b1
         // a21x1 + a22X2 + ... + a2nXn = b2
@@ -75,7 +74,7 @@ public static class LinearSystemSolver
         return result;
     }
 
-    public static double[] FindLinearSystemSolution_Approx(Matrix A, double[] b, double[] x = null, double[] _x = null)
+    public static double[] ConjugateTransposeMethod(Matrix A, double[] b, double[] x = null, double[] _x = null)
     {
         if ((A?.Dimensions.Row ?? int.MinValue) == int.MinValue)
         {
@@ -126,7 +125,7 @@ public static class LinearSystemSolver
         // if intial guess is close enough, return
         if (isSuffcientlySmall(r))
         {
-            return VectorAlgebra.RoundVector(x);
+            return VectorAlgebra.Round(x);
         }
 
         // search direction vector p0 = r0
@@ -158,7 +157,7 @@ public static class LinearSystemSolver
             if (isSuffcientlySmall(r_next))
             {
                 Console.WriteLine(@"Iterations: {0}", k);
-                return VectorAlgebra.RoundVector(x);
+                return VectorAlgebra.Round(x);
             }
 
             // compute scalar bk
@@ -174,7 +173,7 @@ public static class LinearSystemSolver
 
         Console.WriteLine("Broke out of loop =(");
 
-        return VectorAlgebra.RoundVector(x);
+        return VectorAlgebra.Round(x);
     }
 
     // Used to help determine when I have a viable solution 
@@ -201,12 +200,12 @@ public static class LinearSystemSolver
         // if intial guess is close enough, return
         if (isSuffcientlySmall(r))
         {
-            return VectorAlgebra.RoundVector(x);
+            return VectorAlgebra.Round(x);
         }
 
         if(isSuffcientlySmall(_r))
         {
-            return VectorAlgebra.RoundVector(_x);
+            return VectorAlgebra.Round(_x);
         }
 
         // search direction vector p0 = r0
@@ -240,14 +239,14 @@ public static class LinearSystemSolver
             if (isSuffcientlySmall(r_next))
             {
                 Console.WriteLine(@"Iterations: {0}", k);
-                return VectorAlgebra.RoundVector(x);
+                return VectorAlgebra.Round(x);
             }
 
             var _r_next = VectorAlgebra.Subtract(_r, VectorAlgebra.Multiply(a, Matrix.Multiply(A, _p, true)));
             if (isSuffcientlySmall(_r_next))
             {
                 Console.WriteLine(@"Iterations: {0}", k);
-                return VectorAlgebra.RoundVector(_x);
+                return VectorAlgebra.Round(_x);
             }
 
             // compute scalar beta
@@ -266,6 +265,6 @@ public static class LinearSystemSolver
         Console.WriteLine("Broke out of loop =(");
 
         // default case if I break out of the loop without a proper solution
-        return VectorAlgebra.RoundVector(x);
+        return VectorAlgebra.Round(x);
     }
 }

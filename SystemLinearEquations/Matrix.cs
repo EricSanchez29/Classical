@@ -134,7 +134,6 @@ public class Matrix : MatrixBase
         // 
         // Laplace Expansion = O(n!)
         // Modified Laplace ~ O(2.2n) with Aux(2^n)
-// UPDATE COMPELXITY ANALYSIS
         if (cramersRuleIteration < 0)
         {
             throw new ArgumentException("cramersRuleIteration cannot be less than 0");
@@ -299,8 +298,6 @@ public class Matrix : MatrixBase
         // there is no smaller cofactor
         // so, no smaller minor to calculate
         // Therefore, calculate this.minor
-
-        // flip this with the above if and make it 
         else if (row == this.matrix.Length - 2)
         {
             allowedColumns.Remove(column);

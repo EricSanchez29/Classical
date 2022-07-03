@@ -20,4 +20,3 @@ public class Global
 {
     public static readonly int Precision = 15;
 }
-

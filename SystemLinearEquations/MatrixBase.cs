@@ -1,5 +1,3 @@
-using System;
-
 namespace Maths.LinearAlgebra;
 
 public class MatrixBase

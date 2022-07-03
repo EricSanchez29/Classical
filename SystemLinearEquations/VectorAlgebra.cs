@@ -5,8 +5,6 @@ namespace Maths.LinearAlgebra;
 
 public static class VectorAlgebra
 {
-    private static readonly int _precision = Global.Precision;
-
     // Use the product of a vector with itself, to get vector length^2
     // Sqrt(a * a) = lenght of a
     //
@@ -189,9 +187,9 @@ public static class VectorAlgebra
         return sb.ToString();
     }
 
-    public static double[] RoundVector(double[] vector, int? precision = null)
+    public static double[] Round(double[] vector, int? precision = null)
     {
-        precision = precision ?? _precision;
+        precision = precision ?? Global.Precision;
 
         if ((vector?.Length ?? 0) == 0)
         {
