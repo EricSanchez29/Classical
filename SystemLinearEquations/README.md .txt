@@ -117,11 +117,11 @@ Code description:
 
 - a standard implementation of the Conjugate Gradient method
 
-	- on my machine this solves a system where n = 1000 in ~ 35 seconds
+	- on my machine this solves a system where n = 1000 in ~35 seconds
 
 - a standard implementation of the Biconjugate Gradient method
 
-	- on my machine this solves a system where n = 300 in ~ 14 seconds
+	- on my machine this solves a system where n = 300 in ~14 seconds
 
 - a console app that exercises these methods and compares their runttime and outputs
 

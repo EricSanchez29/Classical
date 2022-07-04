@@ -40,9 +40,9 @@ public static class LinearSystemAlgorithms
 
         // Am about to divide by the original determinant of matrix A
         // making sure I don't divide by zero
-        if (determinant == double.NaN || determinant == 0.0)
+        if (double.IsNaN(determinant) || determinant == 0.0)
         {
-            return null;
+            throw new Exception();
         }
 
         var result = new double[A.Dimensions.Column];
@@ -76,22 +76,18 @@ public static class LinearSystemAlgorithms
 
     public static double[] ConjugateTransposeMethod(Matrix A, double[] b, double[] x = null, double[] _x = null)
     {
-        if ((A?.Dimensions.Row ?? int.MinValue) == int.MinValue)
+        if ((A == null) || ((b?.Length ?? 0) == 0))
         {
-            return null;
+            throw new ArgumentException();
         }
 
-        if (((A?.matrix?[0][0] ?? 0.0) == 0.0)
-            || ((b?.Length ?? 0) == 0))
+        if (A.Dimensions.Row != A.Dimensions.Column)
         {
-            return null;
+            throw new ArgumentException();
         }
 
         // Two initial guesses for x
         x ??= new double[b.Length];
-        _x ??= new double[b.Length];
-        for (int i = 0; i < b.Length; i++)
-            _x[i] = 1;
 
         // Picking the correct algorithnm to approximate the solution,
         // based on if the input matrix m is hermitian or not
@@ -100,8 +96,13 @@ public static class LinearSystemAlgorithms
         // in order to determine if a matrix is hermitian
         // (as opposed to a the conjugate transpose)
         var conjugateTranpose = A.Transpose();
+
         if (!A.Equals(conjugateTranpose))
         {
+            _x ??= new double[b.Length];
+            for (int i = 0; i < b.Length; i++)
+                _x[i] = 1;
+
             // Should never run this algorithm with a Herimitian matrix
             // Runs twice as slow with this method vs conjugate gradient
             return biconjugateGradient(A, b, x, _x);
@@ -129,7 +130,7 @@ public static class LinearSystemAlgorithms
         }
 
         // search direction vector p0 = r0
-        // for the first iteration
+        // (only for the first iteration)
         var p = r;
 
         // for now doing a predetermined number of iterations
@@ -142,13 +143,13 @@ public static class LinearSystemAlgorithms
             if (a_denominator == 0.0)
             {
                 // bad x0 guess?
-                return null;
+                return new double[0];
             }
 
             var a = VectorAlgebra.DotProduct(r, r) / a_denominator;
 
-            // compute x1
-            // x1 = x0 + a0p0
+            // compute xk
+            // xk = x_k-1 + a_k * p_k-1
             x = VectorAlgebra.Add(x, VectorAlgebra.Multiply(a, p));
 
             // compute residual vector r1
@@ -180,7 +181,7 @@ public static class LinearSystemAlgorithms
     public static bool isSuffcientlySmall(double[] vector)
     {
         // ||v|| = v * v < error than can be considered a zero vector
-        if (VectorAlgebra.DotProduct(vector, vector) < 0.001)
+        if (VectorAlgebra.DotProduct(vector, vector) < 0.0001)
         {
             return true;
         }

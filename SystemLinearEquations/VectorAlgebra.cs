@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 
 namespace Maths.LinearAlgebra;
@@ -48,7 +47,7 @@ public static class VectorAlgebra
     public static double[] CrossProduct(double[] leftVector, double[] rightVector)
     {
         if (leftVector == null || rightVector == null || leftVector.Length != rightVector.Length)
-            return null;
+            return Array.Empty<double>();
 
         var result = new double[leftVector.Length];
 
@@ -67,7 +66,7 @@ public static class VectorAlgebra
     {
         if (leftVector == null || rightVector == null || leftVector.Length != rightVector.Length)
         {
-            return null;
+            return Array.Empty<double>();
         }
 
         var result = new double[leftVector.Length];
@@ -85,7 +84,7 @@ public static class VectorAlgebra
     {
         if (leftVector == null || rightVector == null || leftVector.Length != rightVector.Length)
         {
-            return null;
+            return Array.Empty<double>();
         }
 
         var result = new double[leftVector.Length];
@@ -116,8 +115,6 @@ public static class VectorAlgebra
         if (testVector == null || refVector == null || testVector.Length != refVector.Length)
             return double.MaxValue;
 
-        var result = 0.0;
-
         var testLength = Math.Sqrt(DotProduct(testVector));
         var refLength = Math.Sqrt(DotProduct(refVector));
 
@@ -128,7 +125,7 @@ public static class VectorAlgebra
             return double.NaN;
         }
 
-        result = (testLength - refLength) / refLength;
+        double result = (testLength - refLength) / refLength;
 
         return result * 100;
     }
@@ -169,17 +166,17 @@ public static class VectorAlgebra
         var length = vector.Length;
 
         var sb = new StringBuilder();
-        sb.Append("<");
+        sb.Append('<');
         for (int i = 0; i < length - 1; i++)
         {                
             sb.Append(vector[i].ToString());
-            sb.Append(",");
+            sb.Append(',');
         }
 
         // am doing this outside of the for loop to avoid checking 
         // for this case since its always last
         sb.Append(vector[length - 1].ToString());
-        sb.Append(">");
+        sb.Append('>');
 
         if (console)
             Console.WriteLine(sb);
