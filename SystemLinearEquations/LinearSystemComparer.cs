@@ -13,7 +13,7 @@ public static class LinearSystemComparer
         // where A is Hermitian
         // and b is any real vector (n dimensions)
         
-        compareMethods(1, 20, true);
+        compareMethods(1, 23, true);
     }
 
     // Used to compare the exact vs approximate solutions of square(n x n), real valued linear systems 
@@ -24,31 +24,21 @@ public static class LinearSystemComparer
         // where A is a real square matrix
         // and b is any real vector (n dimensions)
 
-        compareMethods(1, 20, false);
+        compareMethods(1, 23, false);
     }
 
     // Used to benchmark implementation of the algorithm
     // Only running the Conjugate gradient method
     public static void HermitianSystem_ApproxOnly()
     {
-        // Solve for x vector (n dimensions)
-        // Ax = b
-        // where A is Hermitian
-        // and b is any real vector (n dimensions)
-
-        compareMethods(999, 1000, true, false);
+        compareMethods(999, 1010, true, false);
     }
 
     // Used to benchmark implementation of the algorithm
     // Only running the Biconjugate gradient method
     public static void NonHermitianSystem_ApproxOnly()
     {
-        // Solve for x vector (n dimensions)
-        // Ax = b
-        // where A is a real square matrix
-        // and b is any real vector (n dimensions)
-
-        compareMethods(299, 300, false, false);
+        compareMethods(300, 310, false, false);
     }
 
     // My individual trial timing of these algorithms does not include
@@ -59,7 +49,7 @@ public static class LinearSystemComparer
     {
         if ((startSize > endSize) || (startSize < 1))
         {
-            throw new ArgumentException();
+            throw new ArgumentException("Wrong startSize and endSize combo");
         }
 
         // Largest System computed (n x n)
@@ -120,7 +110,7 @@ public static class LinearSystemComparer
             }
             else
             {
-                exact = null;
+                exact = new double[0];
                 exactTime = TimeSpan.MinValue;
             }
 
@@ -128,7 +118,13 @@ public static class LinearSystemComparer
             var approx = LinearSystemAlgorithms.ConjugateTransposeMethod(m1, b1);
             sw.Stop();
 
-            //Console.WriteLine("Approx: " + approx);
+            if (approx.Length == 0)
+            {
+                Console.WriteLine("Approx: Divided by zero =(");
+                Console.WriteLine("Retry");
+                i--;
+                continue;
+            }
 
             if (!CheckSolution(m1, approx, b1, out var difference))
             {
@@ -212,7 +208,7 @@ public static class LinearSystemComparer
         return folderName + fileName;
     }
 
-    // returns true if a solution is within error
+    // Returns true if a solution is within error
     private static bool CheckSolution(Matrix m, double[] x, double[] b, out double percentDifference)
     {
         var _b = Matrix.Multiply(m, x);

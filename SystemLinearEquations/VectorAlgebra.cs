@@ -136,19 +136,9 @@ public static class VectorAlgebra
 
         var rand = new Random();
 
-        if (integer)
-        {
-            for (int i = 0; i < length; i++)
-            {
-                result[i] = (double)rand.Next();
-            }
-        }
-        else
-        {
-            for (int i = 0; i < length; i++)
-            {                         
-                result[i] = rand.NextDouble();
-            }
+        for (int i = 0; i < length; i++)
+        {                         
+            result[i] = rand.NextDouble();
         }
 
         return result;
@@ -186,9 +176,9 @@ public static class VectorAlgebra
 
     public static double[] Round(double[] vector, int? precision = null)
     {
-        precision = precision ?? Global.Precision;
+        precision ??= Global.Precision;
 
-        if ((vector?.Length ?? 0) == 0)
+        if ((vector == null) || (vector.Length == 0))
         {
             return Array.Empty<double>();
         }

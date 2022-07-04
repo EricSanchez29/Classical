@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace  Maths.LinearAlgebra;
@@ -8,15 +6,7 @@ namespace  Maths.LinearAlgebra;
 // Need to create a new instance to do that
 public class Matrix : MatrixBase
 {
-    public int Precision
-    {
-        get { return _precision; }
-    }
-    private static readonly int _precision = Global.Precision;
-
-    // this is
-    private Dictionary<string, double> _originalDeterminants;
-    
+    private Dictionary<string, double> _originalDeterminants = new Dictionary<string, double>();
     
     // used for benchmarking
     //private int _2x2_Count = 0;
@@ -35,8 +25,7 @@ public class Matrix : MatrixBase
         else if (this == null || obj == null)
             return false;
 
-        var m2 = obj as Matrix;
-        if (m2 == null)
+        if (obj is not Matrix m2)
             return false;
 
         if (this.Dimensions != m2.Dimensions)
@@ -111,10 +100,10 @@ public class Matrix : MatrixBase
     }
 
     // I only save the resulting dictonary to this object when
-    // isCramersRule == true && cramersRuleIteration == 0
+    //  isCramersRule == true && cramersRuleIteration == 0
     // 
-    // I only lookup this.Dictionary when 
-    // isCramersRule == true && cramersRuleIteration != 0
+    // I only lookup this._originalDeterminants when 
+    //  isCramersRule == true && cramersRuleIteration != 0
     public double GetDeterminant(bool isCramersRule = false, int cramersRuleIteration = 0)
     {
         if (this.matrix == null || !this.IsSquare)
@@ -124,7 +113,7 @@ public class Matrix : MatrixBase
            return this.matrix[0][0];
 
         if(this.Dimensions.Column == 2)
-           return  Math.Round(this.matrix[0][0]*this.matrix[1][1], _precision) - Math.Round(this.matrix[0][1]*this.matrix[1][0], _precision);
+           return  Math.Round(this.matrix[0][0]*this.matrix[1][1], Global.Precision) - Math.Round(this.matrix[0][1]*this.matrix[1][0], Global.Precision);
      
         // This is an implementation of the Laplace Expansion method of calculating a determinant
         // aka det(A) = Sum {(-1)^i+j * Aij * Mij}
@@ -155,7 +144,7 @@ public class Matrix : MatrixBase
         //
         // total 2^(n+1) for entire Cramers algorithm
 
-        var power = this.Dimensions.Column;
+        var power = Dimensions.Column;
 
         if (cramersRuleIteration > 0)
             power--;
@@ -165,11 +154,11 @@ public class Matrix : MatrixBase
         Dictionary<string, double> calculatedDeterminants = new Dictionary<string, double>(Convert.ToInt32(dictionarySizeBound));
         
         var allowed = new List<int>();
-        for(int c = 1; c <= this.Dimensions.Column; c++)
+        for(int c = 1; c <= Dimensions.Column; c++)
             allowed.Add(c);
 
         // using regular matrix coordinate notation
-        for (int i = 1; i <= this.Dimensions.Column; i++)
+        for (int i = 1; i <= Dimensions.Column; i++)
         {
             double minorDet;
 
@@ -228,7 +217,7 @@ public class Matrix : MatrixBase
     // two modes
     // one without a special column (specialColumn == 0)
     // one with a special column (0 < specialColumn <= n)
-    //      this means I check the common dictionary this.Dictionary
+    //      this means I check the common dictionary this._originalDeterminants
     private double getMinorDeterminant(int row, int column, Dictionary<string, double> calculations, List<int> allowedColumns, int modfiedColumn = 0)
     {
         // Is it worth using a list?
@@ -238,7 +227,7 @@ public class Matrix : MatrixBase
         //  -   Add(int)
         //  -   Sort()
 
-        if ((row <= 0) || (column <= 0) || (row > this.Dimensions.Row) || (column > this.Dimensions.Column))
+        if ((row <= 0) || (column <= 0) || (row > Dimensions.Row) || (column > this.Dimensions.Column))
             throw new Exception("Something went wrong");
 
         if (modfiedColumn < 0)
@@ -298,7 +287,7 @@ public class Matrix : MatrixBase
         // there is no smaller cofactor
         // so, no smaller minor to calculate
         // Therefore, calculate this.minor
-        else if (row == this.matrix.Length - 2)
+        else if (row == matrix.Length - 2)
         {
             allowedColumns.Remove(column);
 
@@ -373,6 +362,8 @@ public class Matrix : MatrixBase
                 if (i == j)
                     continue;
 
+                // the opposite matrix element, across the diagonal
+                // must be the same for a hermitian matrix
                 result.matrix[j][i] = random;
             }
         }
@@ -393,18 +384,10 @@ public class Matrix : MatrixBase
 
         for (int i = 0; i < n; i++)
         {
-            for (int j = i; j < n; j++)
+            for (int j = 0; j < n; j++)
             {
                 loops++;
                 result.matrix[i][j] = rand.NextDouble();
-
-                // Don't want to overwrite with another random number
-                if (i == j)
-                {
-                    continue;
-                }
-
-                result.matrix[j][i] = rand.NextDouble();
             }
         }
         
@@ -413,30 +396,29 @@ public class Matrix : MatrixBase
 
     public bool Add(Matrix rightOperand)
     {
-        if (this.Dimensions != rightOperand.Dimensions)
+        if (Dimensions != rightOperand.Dimensions)
             return false;
 
-        for (int r = 0; r < this.Dimensions.Row; r++)
-            for (int c = 0; c < this.Dimensions.Column; c++)
+        for (int r = 0; r < Dimensions.Row; r++)
+            for (int c = 0; c < Dimensions.Column; c++)
 
-                this.matrix[r][c] += rightOperand.matrix[r][c];
+                matrix[r][c] += rightOperand.matrix[r][c];
 
         return true;
     }
 
     // left and right don't matter here, commutative
-    public static Matrix Add(Matrix leftOperand, Matrix rightOperand)
+    public static Matrix? Add(Matrix leftOperand, Matrix rightOperand)
     {
         if (leftOperand == null || rightOperand == null || (leftOperand.Dimensions != rightOperand.Dimensions) )
             return null;
 
-        var result = Matrix.Copy(leftOperand);
+        var result = Copy(leftOperand);
 
         result.Add(rightOperand);
 
         return result;
     }
-
 
     /*
         (2,3) * (3,2)
@@ -452,7 +434,7 @@ public class Matrix : MatrixBase
         44  73
     */
     // left and right matter, not commutative
-    public static Matrix Multiply(Matrix leftOperand, Matrix rightOperand)
+    public static Matrix? Multiply(Matrix leftOperand, Matrix rightOperand)
     {
         if (leftOperand.Dimensions.Column != rightOperand.Dimensions.Row)
             return null;
@@ -466,7 +448,7 @@ public class Matrix : MatrixBase
                 double newElement = 0;
 
                 for (int i = 0; i < leftOperand.Dimensions.Column; i++)
-                    newElement = newElement + Math.Round(leftOperand.matrix[newMatrixRow][i]*rightOperand.matrix[i][newMatrixColumn], _precision);
+                    newElement += Math.Round(leftOperand.matrix[newMatrixRow][i]*rightOperand.matrix[i][newMatrixColumn], Global.Precision);
 
 
                 newMatrix.matrix[newMatrixRow][newMatrixColumn] = newElement;
@@ -481,7 +463,7 @@ public class Matrix : MatrixBase
         if (swapOperands)
         {
             if (leftOperand.Dimensions.Row != rightOperand.Length)
-                return null;
+                return Array.Empty<double>();
 
             var result = new double[leftOperand.Dimensions.Column];
 
@@ -490,7 +472,7 @@ public class Matrix : MatrixBase
                 var sum = 0.0;
 
                 for (int j = 0; j < leftOperand.Dimensions.Row; j++)
-                    sum = sum + Math.Round(rightOperand[j]*leftOperand.matrix[j][i], _precision);
+                    sum += Math.Round(rightOperand[j]*leftOperand.matrix[j][i], Global.Precision);
 
                 result[i] = sum;
             }
@@ -500,7 +482,7 @@ public class Matrix : MatrixBase
         else
         {
             if (leftOperand.Dimensions.Column != rightOperand.Length)
-                return null;
+                return Array.Empty<double>();
 
             var result = new double[leftOperand.Dimensions.Row];
 
@@ -509,7 +491,7 @@ public class Matrix : MatrixBase
                 var sum = 0.0;
 
                 for (int j = 0; j < rightOperand.Length; j++)
-                    sum = sum + Math.Round(leftOperand.matrix[i][j]*rightOperand[j], _precision);
+                    sum += Math.Round(leftOperand.matrix[i][j]*rightOperand[j], Global.Precision);
 
                 result[i] = sum;
             }
@@ -550,7 +532,7 @@ public class Matrix : MatrixBase
             for (int j = 0; j < this.Dimensions.Column; j++)
             {
                 sb.Append(this.matrix[i][j]);
-                sb.Append(" ");
+                sb.Append(' ');
             }
 
             stringArray[i] = sb.ToString();
