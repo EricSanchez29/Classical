@@ -268,4 +268,97 @@ public static class LinearSystemAlgorithms
         // default case if I break out of the loop without a proper solution
         return VectorAlgebra.Round(x);
     }
+
+
+    // adapted from Habgood & Arel (2011)
+    public static double[] ChiosCondensationMethod(Matrix A, double[] b)
+                // need to figure out how b vector works in this algorithm
+    {
+        // current matrix?
+        //var A = new double[1][];
+
+        var result = new double[b.Length];
+
+        // Condensation size
+        int m = 2;
+        int n = A.Dimensions.Column;
+
+        double[][] reusableminor = new double[n][];
+        for (int i = 0; i < n; i++)
+        {
+            reusableminor[i] = new double[n];
+        }
+
+        // unknowns for this matrix to solve for
+        int mirrorsize = n;
+
+        while ((n - m) > mirrorsize)
+        {
+            var leadDeterminant = A.GetMinorDeterminant(m + 1, m + 1);
+            var leadminor = new double[m];
+
+            if (leadDeterminant == 0)
+                throw new Exception("divided by zero =(");
+
+            // divide lead column by minor of at A(1,1)
+            for (int i = 0; i < n - 1; i++)
+            {
+                A.matrix[i][1] = A.matrix[i][1] / leadDeterminant;
+            }
+
+            // calculate the minors that are common
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    reusableminor[i][j] = A.GetMinorDeterminant(i, j);
+                }
+            }
+
+            for (int row = m + 1; row <= n + 1; m++)
+            {
+                for (int i = 1; i <= m; i++)
+                {
+                    for (int j = 1; j <= m; j++)
+                    {
+                        if (j % 2 != 0)
+                            leadminor[i] = leadminor[i] + (A.matrix[row][j] * reusableminor[i][j]);
+                        else
+                            leadminor[i] = leadminor[i] - (A.matrix[row][j] * reusableminor[i][j]);
+                    }
+                }
+
+                // core loop: find the m x m determinant for each elmement in a
+                for (int col = m + 1; col <= n + 1; col++)
+                {
+                    for (int i = 0; i <= m; i++)
+                    {
+                        // calculate m x m determinant
+                    }
+                }
+            }
+
+            // reduce matrix size by condensation step size
+            n -= m;
+        }
+
+        // is this right?
+        if (n == 4)
+        {
+            // solve for the subset of unknowns assigned
+            // x[] = cramersrule[a]
+
+            return CramersRuleModified(A, b);
+        }
+        else // recursive call to continue condesnsation
+        {
+            var mirrorA = Matrix.Mirror(A);
+
+            ChiosCondensationMethod(mirrorA, b);
+
+            ChiosCondensationMethod(A, b);
+        }
+
+        return result;
+    }
 }

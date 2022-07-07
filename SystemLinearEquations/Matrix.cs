@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 
 namespace  Maths.LinearAlgebra;
@@ -6,6 +7,7 @@ namespace  Maths.LinearAlgebra;
 // Need to create a new instance to do that
 public class Matrix : MatrixBase
 {
+    // this might slow down 
     private Dictionary<string, double> _originalDeterminants = new Dictionary<string, double>();
     
     // used for benchmarking
@@ -168,21 +170,21 @@ public class Matrix : MatrixBase
                 {
                     // populate this.dictionary (store all calculations from determinant of orignal A)
                     // ie before subsequent calls with modified A 
-                    minorDet = getMinorDeterminant(1, i, calculatedDeterminants, allowed);
+                    minorDet = getDeterminantHelper(1, i, calculatedDeterminants, allowed);
                     _originalDeterminants = calculatedDeterminants;
                 }
                 // only once per Dj.GetDeterminant in CramersRule
                 // the function getSubMatrix() will find a repeat calculation from the intitial getDet()
                 else
                 {
-                    minorDet = getMinorDeterminant(1, i, calculatedDeterminants, allowed, cramersRuleIteration);
+                    minorDet = getDeterminantHelper(1, i, calculatedDeterminants, allowed, cramersRuleIteration);
                 }
             }
             else
             {
                 // ignore dictionary associated with this object
                 // find answer using local dictionary which is not persisted
-                minorDet = getMinorDeterminant(1, i, calculatedDeterminants, allowed);
+                minorDet = getDeterminantHelper(1, i, calculatedDeterminants, allowed);
             }
 
             double cofactorDet = matrix[0][i - 1] * minorDet;
@@ -218,7 +220,7 @@ public class Matrix : MatrixBase
     // one without a special column (specialColumn == 0)
     // one with a special column (0 < specialColumn <= n)
     //      this means I check the common dictionary this._originalDeterminants
-    private double getMinorDeterminant(int row, int column, Dictionary<string, double> calculations, List<int> allowedColumns, int modfiedColumn = 0)
+    private double getDeterminantHelper(int row, int column, Dictionary<string, double> calculations, List<int> allowedColumns, int modfiedColumn = 0)
     {
         // Is it worth using a list?
         // In this function I use:
@@ -261,7 +263,7 @@ public class Matrix : MatrixBase
             {
                 for (int i = 0; i < allowedColumns.Count; i++)
                 {
-                    var mult = this.matrix[row][allowedColumns[i] - 1] * getMinorDeterminant(row + 1, allowedColumns[i], calculations, allowedColumns, modfiedColumn);
+                    var mult = this.matrix[row][allowedColumns[i] - 1] * getDeterminantHelper(row + 1, allowedColumns[i], calculations, allowedColumns, modfiedColumn);
 
                     if ((i) % 2 == 0)
                         determinant += mult;
@@ -342,6 +344,128 @@ public class Matrix : MatrixBase
             // or too small for the size of the matrix, which is currently never
             return double.NaN;
         }
+    }
+
+    // Finds the determinant of the this.matrix
+    // created by ignoring row and column selected
+    // recursively calls the get
+    public double GetMinorDeterminant(int row, int column)
+    {
+        // should i even by creating a (1x1) matrix before calling this function?
+        if ((Dimensions.Column == 2) && (Dimensions.Row == 2))
+        {
+            // no determinant to calculate
+            return matrix[0][0];
+        }
+
+        //should do this outside of this function, this was in the 
+        if ((row == 1 + Dimensions.Row) && (column == 1 + Dimensions.Column))
+        {
+            // get the determinant of this matrix, don't exclude a row/column
+            // using lists and dictionaries O(2^n)
+            return GetDeterminant();
+        }
+
+        var power = Dimensions.Column;
+
+        var dictionarySizeBound = Math.Pow(2, power);
+
+        Dictionary<string, double> calculatedDeterminants = new Dictionary<string, double>(Convert.ToInt32(dictionarySizeBound));
+
+        var allowed = new List<int>();
+        for (int c = 1; c <= Dimensions.Column; c++)
+        {
+            if (c == column)
+                continue;
+
+            allowed.Add(c);
+        }
+
+        // reuse old code for calculating minor determinants (using lists and dictionaries O(2^n))
+
+        // this currently doesn't work because the original code doesn't generalize to any selected Minor
+        // it only works for a certain call path
+        // I could rotate this matrix by 180 degrees in order for this to work 
+        var a = getDeterminantHelper(row, column, calculatedDeterminants, allowed);
+
+        return 0;
+
+    }
+    
+
+
+    // flips the order of the columns
+    // one of the flipped columns should be negated
+    // though apparently this is not necessary,
+    // (revisit this later)
+    //
+    // should this return a simple 2d double array?
+    // also should this be a in place swap?
+    public static Matrix Mirror(Matrix matrix)
+    {
+        int rowLength = matrix.Dimensions.Row;
+
+        var result = new double[matrix.Dimensions.Row][];
+
+        int columnLength = matrix.Dimensions.Column;
+
+        for (int i = 0; i < rowLength; i++)
+        {
+            // empty column, will add content bellow
+            result[i] = new double[columnLength];
+
+            // | ai1 ai2 ... ain-1 ain |
+            //
+            // becomes
+            //
+            // | ain ain-1 ... -ai2 -ai1 |
+            //
+            // (see Habgood (2011) for better description)
+
+            // this is the pivot for the "mirroring" 
+            int midPoint;
+
+            int destColumn = columnLength - 1;
+
+            bool skipColumn;
+            // if odd number of columns, skip swapping the middle one
+            if (columnLength % 2 != 0)
+            {
+                skipColumn = true;
+                midPoint = destColumn/ 2; // odd numbers round down
+            }
+            // if even number of columns, swap all
+            else
+            {
+                skipColumn = false;
+                midPoint = (columnLength / 2);
+            }
+            
+            int sourceColumn;
+
+            for (sourceColumn = 0; sourceColumn < midPoint; sourceColumn++)
+            {
+                result[i][destColumn] = -matrix.matrix[i][sourceColumn];
+
+                destColumn--;
+            }
+
+            if (skipColumn)
+            {
+                // don't swap just copy
+                result[i][destColumn] = matrix.matrix[i][sourceColumn];
+                destColumn--;
+                sourceColumn++;
+            }
+
+            for (int k = sourceColumn; k < columnLength; k++)
+            {
+                result[i][destColumn] = matrix.matrix[i][k];
+                destColumn--;
+            }
+        }
+
+        return new Matrix(result);
     }
 
     // add test?

@@ -110,7 +110,7 @@ public static class LinearSystemComparer
             }
             else
             {
-                exact = new double[0];
+                exact = Array.Empty<double>();
                 exactTime = TimeSpan.MinValue;
             }
 
