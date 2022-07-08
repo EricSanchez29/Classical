@@ -348,23 +348,35 @@ public class Matrix : MatrixBase
 
     // Finds the determinant of the this.matrix
     // created by ignoring row and column selected
-    // recursively calls the get
+    // will use my old method of creating a dictionary to help with calculations
+    // but this doesnt
     public double GetMinorDeterminant(int row, int column)
     {
+        if ((row < 1) || (row > Dimensions.Row) || (column < 1) || (column > Dimensions.Column))
+        {
+            throw new ArgumentOutOfRangeException("Cannot commute minor " + row + "x"+ column );
+        }
+
         // should i even by creating a (1x1) matrix before calling this function?
         if ((Dimensions.Column == 2) && (Dimensions.Row == 2))
         {
             // no determinant to calculate
+        // is this right?
             return matrix[0][0];
         }
 
-        //should do this outside of this function, this was in the 
+        //should do this outside of this function, this was in the paper
         if ((row == 1 + Dimensions.Row) && (column == 1 + Dimensions.Column))
         {
             // get the determinant of this matrix, don't exclude a row/column
             // using lists and dictionaries O(2^n)
             return GetDeterminant();
         }
+
+
+        // maybe should optimize this for matrices which don't benefit much from a dictionary (n~4)
+        // (definitely not worth it at n~3)
+        // 
 
         var power = Dimensions.Column;
 
@@ -375,24 +387,192 @@ public class Matrix : MatrixBase
         var allowed = new List<int>();
         for (int c = 1; c <= Dimensions.Column; c++)
         {
+            // don't include this column
             if (c == column)
                 continue;
 
             allowed.Add(c);
         }
 
-        // reuse old code for calculating minor determinants (using lists and dictionaries O(2^n))
+        double determinant = 0;
 
-        // this currently doesn't work because the original code doesn't generalize to any selected Minor
-        // it only works for a certain call path
-        // I could rotate this matrix by 180 degrees in order for this to work 
-        var a = getDeterminantHelper(row, column, calculatedDeterminants, allowed);
+        int firstRow = 1;
 
-        return 0;
+        // here the first row is the row i want to ignore
+        if (firstRow == row)
+        {
+            //simply skip the first row, proceed as normal, since I'm traveling down the matrix
+            firstRow = 2;
+        }
 
+        // not based on dimensions of the bigger matrix
+        for (int i = 0; i < allowed.Count - 1; i++)
+        {
+            int thisColumn = allowed[i];
+            double cofactorDet = getMinorDetHelper(firstRow, thisColumn, calculatedDeterminants, allowed, row, column);
+
+
+
+            if (allowed.Count > 2)
+            {
+                cofactorDet *= matrix[firstRow - 1][thisColumn - 1];
+            }
+
+            if (i % 2 == 0)
+                determinant += cofactorDet;
+            else
+                determinant -= cofactorDet;
+        }
+
+        return determinant;
     }
-    
 
+    // Scenarioss (I won't ever call out of bounds to begin with, aka calling the ignored column or coordinates which don't exist in the matrix)
+    //
+    // 1st: row < 2 + end of matrix
+    //      and the ignored row is the last row in meatrix
+    // 2nd: this.row = 2 + end matrix
+    //      and the ignored row is the last row
+    // 3rd: this.row = 2 + end matrix
+    //      and the ignored row is the next row (2nd to last row)
+    // 
+    private double getMinorDetHelper(int row, int col, Dictionary<string, double> calculations, List<int> allowedColumns, int ignoreRow, int ignoreColumn)
+    {
+        if ((row == ignoreRow) || (col == ignoreColumn))
+        {
+            throw new Exception("Not allowed");
+        }
+        
+        // ensures that the input row/column at least exists in the matrix
+        if ((row <= 0) || (col <= 0) || (row > Dimensions.Row) || (col > this.Dimensions.Column))
+            throw new Exception("Also not allowed");
+
+        //1st: this.row is more than two rows less(higher on the matrix, earlier call) than the end of the matrix(aka row == Dimensions.Row)
+        //      and the ignored row is the last row
+        // 
+        if (allowedColumns.Count > 2)
+        {
+            allowedColumns.Remove(col);
+            double determinant = 0;
+
+            int length = allowedColumns.Count;
+
+            byte[] keyArray = new byte[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                keyArray[i] = Convert.ToByte(allowedColumns[i]);
+            }
+
+            string key = Encoding.Default.GetString(keyArray);
+
+            if (!calculations.ContainsKey(key))
+            {
+                // next iteration
+                // (be mindful of column and row which are not allowed but still contained in matrix[][]
+                int nextRow = row + 1;
+
+                // i'm supposed to ingore this row for every calculation of the minor determinant
+                if (nextRow == ignoreRow)
+                {
+                    // skip to next
+                    nextRow++;
+                }
+
+                for (int i = 0; i < allowedColumns.Count; i++)
+                {
+                    if (allowedColumns[i] == ignoreColumn)
+                    {
+                        throw new Exception("Something went wrong");
+                    }    
+
+                    var mult = this.matrix[row][allowedColumns[i] - 1] * getMinorDetHelper(nextRow, allowedColumns[i], calculations, allowedColumns, ignoreRow, ignoreColumn);
+
+                    if (i % 2 == 0)
+                        determinant += mult;
+                    else
+                        determinant -= mult;
+                }
+
+                calculations.Add(key, determinant);
+            }
+            else
+            {
+                //_dictionaryCalls++;
+                determinant = calculations[key];
+            }
+
+            allowedColumns.Add(col);
+            allowedColumns.Sort();
+
+            return determinant;
+        }
+
+        // this needs different logic
+        else if (row == matrix.Length - 2)
+        {
+            int nextRow = -1;
+
+            // and the ignored row is the last row
+            if (row + 2 == ignoreRow)
+            {
+                nextRow = row + 1;
+            }
+            // 3rd: this.row is two rows less ... 
+            //      and the ignored row is the next row (2nd to last row)
+            else if (row + 1 == ignoreRow)
+            {
+                nextRow = row + 2;
+            }
+            // calculate the case: det(2x2)
+            // there is no smaller cofactor
+            // so, no smaller minor to calculate
+            // Therefore, calculate this.minor
+
+            //allowedColumns.Remove(col);
+
+            // at this point, only 2 columns should be allowed
+            if (allowedColumns.Count != 2)
+                throw new Exception("Something went terribly wrong");
+
+            int leftColumn = allowedColumns[0];
+            int rightColumn = allowedColumns[1];
+
+            var keyArray = new byte[2];
+
+            keyArray[0] = Convert.ToByte(leftColumn);
+            keyArray[1] = Convert.ToByte(rightColumn);
+
+            string key = Encoding.Default.GetString(keyArray);
+
+            //allowedColumns.Add(col);
+            //allowedColumns.Sort();
+
+           if (!calculations.ContainsKey(key))
+            {
+                // Used to benchmark vs no dictionary implementation
+                //_2x2_Count++;
+
+                var det = (this.matrix[row - 1][leftColumn - 1] * this.matrix[nextRow-1][rightColumn - 1]) - (this.matrix[nextRow - 1][leftColumn - 1] * this.matrix[row - 1][rightColumn - 1]);
+                calculations.Add(key, det);
+
+                return det;
+            }
+            else
+            {
+                //_dictionaryCalls++;
+
+                return calculations[key];
+            }
+        }
+        
+        else
+        {
+            // This is only ever reached if the input row is too large
+            // or too small for the size of the matrix, which is currently never?
+            return double.NaN;
+        }
+    }
 
     // flips the order of the columns
     // one of the flipped columns should be negated

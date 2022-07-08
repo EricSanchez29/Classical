@@ -188,20 +188,30 @@ public static class MatrixUnitTests
     {
         /// 3x3
         // Arrange
-        var testMatrix3 = new Matrix(3, 3);
-        testMatrix3.matrix[0] = new double[] { 1, 2, 3 };
-        testMatrix3.matrix[1] = new double[] { 2, 4, 5 };
-        testMatrix3.matrix[2] = new double[] { 3, 8, 9 };
+        //var testMatrix3 = new Matrix(3, 3);
+        //testMatrix3.matrix[0] = new double[] { 1, 2, 3 };
+        //testMatrix3.matrix[1] = new double[] { 2, 4, 5 };
+        //testMatrix3.matrix[2] = new double[] { 3, 8, 9 };
 
-        var expected3 = new Matrix(2, 2);
-        expected3.matrix[0] = new double[] { 1, 2};
-        expected3.matrix[1] = new double[] { 2, 4};
+        //var expected3 = new Matrix(2, 2);
+        //expected3.matrix[0] = new double[] { 1, 2 };
+        //expected3.matrix[1] = new double[] { 2, 4 };
 
-        // Act
-        var result3 = testMatrix3.GetMinorDeterminant(3, 3);
+        //// Act
+        //var result3 = testMatrix3.GetMinorDeterminant(3, 3);
 
-        // Assert
-        Assert.Equal(expected3.GetDeterminant(), result3);
+        //// Assert
+        //Assert.Equal(expected3.GetDeterminant(), result3);
+
+        //// Arrange
+        //expected3.matrix[0] = new double[] { 2, 3 };
+        //expected3.matrix[1] = new double[] { 4, 5 };
+
+        //// Act
+        //result3 = testMatrix3.GetMinorDeterminant(3, 1);
+
+        //// Assert
+        //Assert.Equal(expected3.GetDeterminant(), result3);
 
         /// 4x4
         // Arrange

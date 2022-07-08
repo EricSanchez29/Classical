@@ -272,7 +272,6 @@ public static class LinearSystemAlgorithms
 
     // adapted from Habgood & Arel (2011)
     public static double[] ChiosCondensationMethod(Matrix A, double[] b)
-                // need to figure out how b vector works in this algorithm
     {
         // current matrix?
         //var A = new double[1][];
@@ -281,6 +280,8 @@ public static class LinearSystemAlgorithms
 
         // Condensation size
         int m = 2;
+
+        // current matrix's size
         int n = A.Dimensions.Column;
 
         double[][] reusableminor = new double[n][];
@@ -342,6 +343,7 @@ public static class LinearSystemAlgorithms
             n -= m;
         }
 
+        // maybe this could be larger and take advantage of my modified cramer's rule
         // is this right?
         if (n == 4)
         {
