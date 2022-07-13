@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 
 namespace  Maths.LinearAlgebra;
@@ -360,8 +359,10 @@ public class Matrix : MatrixBase
         // should i even by creating a (1x1) matrix before calling this function?
         if ((Dimensions.Column == 2) && (Dimensions.Row == 2))
         {
+            // | a11 a12 |
+            // | a21 a22 |
+            //
             // no determinant to calculate
-        // is this right?
             return matrix[0][0];
         }
 
@@ -410,8 +411,6 @@ public class Matrix : MatrixBase
         {
             int thisColumn = allowed[i];
             double cofactorDet = getMinorDetHelper(firstRow, thisColumn, calculatedDeterminants, allowed, row, column);
-
-
 
             if (allowed.Count > 2)
             {
@@ -580,7 +579,6 @@ public class Matrix : MatrixBase
     // (revisit this later)
     //
     // should this return a simple 2d double array?
-    // also should this be a in place swap?
     public static Matrix Mirror(Matrix matrix)
     {
         int rowLength = matrix.Dimensions.Row;

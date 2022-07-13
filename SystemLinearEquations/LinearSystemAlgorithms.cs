@@ -278,7 +278,7 @@ public static class LinearSystemAlgorithms
 
         var result = new double[b.Length];
 
-        // Condensation size
+        // Condensation step size
         int m = 2;
 
         // current matrix's size
@@ -296,10 +296,10 @@ public static class LinearSystemAlgorithms
         while ((n - m) > mirrorsize)
         {
             var leadDeterminant = A.GetMinorDeterminant(m + 1, m + 1);
-            var leadminor = new double[m];
+            var leadMinor = new double[m];
 
             if (leadDeterminant == 0)
-                throw new Exception("divided by zero =(");
+                throw new Exception("Can't divide by zero =(");
 
             // divide lead column by minor of at A(1,1)
             for (int i = 0; i < n - 1; i++)
@@ -312,29 +312,37 @@ public static class LinearSystemAlgorithms
             {
                 for (int j = 0; j < m; j++)
                 {
+                    // each minor will exclude one row & col from this matrix A
                     reusableminor[i][j] = A.GetMinorDeterminant(i, j);
                 }
             }
 
-            for (int row = m + 1; row <= n + 1; m++)
+            for (int row = m + 1; row <= n + 1; row++)
             {
+                // find the lead minors for this row
                 for (int i = 1; i <= m; i++)
                 {
+                    leadMinor[i] = 0;
+
                     for (int j = 1; j <= m; j++)
                     {
                         if (j % 2 != 0)
-                            leadminor[i] = leadminor[i] + (A.matrix[row][j] * reusableminor[i][j]);
+                            leadMinor[i] = leadMinor[i] + (A.matrix[row][j] * reusableminor[i][j]);
                         else
-                            leadminor[i] = leadminor[i] - (A.matrix[row][j] * reusableminor[i][j]);
+                            leadMinor[i] = leadMinor[i] - (A.matrix[row][j] * reusableminor[i][j]);
                     }
                 }
 
-                // core loop: find the m x m determinant for each elmement in a
+                // Core Loop: find the m x m determinant for each elmement in a
                 for (int col = m + 1; col <= n + 1; col++)
                 {
                     for (int i = 0; i <= m; i++)
                     {
                         // calculate m x m determinant
+                        if (i % 2 == 0)
+                            A.matrix[row][col] = A.matrix[row][col] + (leadMinor[i] * A.matrix[i][col]);
+                        else
+                            A.matrix[row][col] = A.matrix[row][col] - (leadMinor[i] * A.matrix[i][col]);
                     }
                 }
             }
@@ -343,16 +351,17 @@ public static class LinearSystemAlgorithms
             n -= m;
         }
 
-        // maybe this could be larger and take advantage of my modified cramer's rule
-        // is this right?
-        if (n == 4)
+        if (n == 6)
         {
             // solve for the subset of unknowns assigned
             // x[] = cramersrule[a]
 
+            // Should I reuse my old code?
+            // Maybe this becomes more worth while at n == 5 or 6,
+            // which means less condesation steps?
             return CramersRuleModified(A, b);
         }
-        else // recursive call to continue condesnsation
+        else // recursive call to continue condensation
         {
             var mirrorA = Matrix.Mirror(A);
 

@@ -219,21 +219,33 @@ public static class MatrixUnitTests
         testMatrix4.matrix[0] = new double[] { 1, 2, 3, 4 };
         testMatrix4.matrix[1] = new double[] { 2, 4, 5, 7 };
         testMatrix4.matrix[2] = new double[] { 3, 6, 9, 3 };
-        testMatrix4.matrix[3] = new double[] { 1, 8, 2, 1 };
+        testMatrix4.matrix[3] = new double[] { 4, 8, 2, 1 };
 
         var expected4 = new Matrix(3, 3);
         expected4.matrix[0] = new double[] { 4, 5, 7 };
         expected4.matrix[1] = new double[] { 6, 9, 3 };
-        expected4.matrix[2] = new double[] { 8, 2, 1 };
+        expected4.matrix[2] = new double[] { 8, 2, 1 }; 
 
         // Act
         var result4 = testMatrix4.GetMinorDeterminant(1, 1);
 
         // Assert
         Assert.Equal(expected4.GetDeterminant(), result4);
+
+        // Arrange
+        expected4 = new Matrix(3, 3);
+        expected4.matrix[0] = new double[] { 4, 5, 7 };
+        expected4.matrix[1] = new double[] { 6, 9, 3 };
+        expected4.matrix[2] = new double[] { 8, 2, 1 };
+
+        // Act
+        result4 = testMatrix4.GetMinorDeterminant(1, 1);
+
+        // Assert
+        Assert.Equal(expected4.GetDeterminant(), result4);
     }
 
-    [Fact] //
+    [Fact]
     public static void TestMirror()
     {
         // Arrange
