@@ -81,12 +81,15 @@ This project contains 3 different algorithms for solving systems of linear equat
 
 # Code description:
 
-- a modified version of Cramer's rule with Laplacian expansion O(n!) => O(n) & Aux(2^n)
+- a modified version of Cramer's rule with Laplacian expansion O(n!) & Aux(n^2) [for storing the matrix] => O(n) & Aux(2^n) [dictionary]
 
-	-	1 persistent Dictionary<string,double> with Aux(2^n), the minors   first determinant calculated, det(A)
+	-	1 persistent Dictionary<string,double> with Aux(2^n), the minors which were used to calculate the first determinant, det(A)
 
-	- 	and n * Dictionary<string,double> with Aux(2^n-1) which are not stored in memory
+	- 	and n * Dictionary<string,double>(swapped columns) with Aux(2^n-1) which are not stored in memory for subsequent calculations
 	
+	-	Note because the only 1 column is swapped for the above n matricies, the persistant dictionary
+			contains many calculations (approximately 1/2) that were computed
+
 	-	where the key is a coordinate of the minor matrix being calculated for that
 		recursive call to getMinorDeterminant()
 
@@ -123,9 +126,9 @@ This project contains 3 different algorithms for solving systems of linear equat
 
 	- on my machine this solves a system where n = 300 in ~14 seconds
 
-- a console app that exercises these methods and compares their runttime and outputs
+- a console app that exercises these methods and compares their run-time and outputs
 
 	- When comparing the exact solution with an approximation, I use the exact solution as a reference and calculate the percent diff in length
 
-	- Since both Conjugate methods sometimes produces unstable solutions (with very large difference in length), 
-		I sometimes have to rerun a comparison with a new matrix (Need to study these errors,)
+	- Since both Conjugate methods sometimes produces unstable solutions (with very large differences in length), 
+		I sometimes have to rerun a comparison with a new matrix (Need to study these errors)

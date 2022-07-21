@@ -31,14 +31,14 @@ public static class LinearSystemComparer
     // Only running the Conjugate gradient method
     public static void HermitianSystem_ApproxOnly()
     {
-        compareMethods(999, 1010, true, false);
+        compareMethods(1700, 1701, true, false);
     }
 
     // Used to benchmark implementation of the algorithm
     // Only running the Biconjugate gradient method
     public static void NonHermitianSystem_ApproxOnly()
     {
-        compareMethods(300, 310, false, false);
+        compareMethods(400, 401, false, false);
     }
 
     // My individual trial timing of these algorithms does not include
@@ -63,6 +63,8 @@ public static class LinearSystemComparer
         var summaryFile = getFileName();
         string dataFile;
 
+        
+
         if (hermitian)
         {
             dataFile = summaryFile + "_data_H.txt";
@@ -77,7 +79,9 @@ public static class LinearSystemComparer
         var fileStream = new StreamWriter(summaryFile);
         var verboseStream = new StreamWriter(dataFile);
 
-        for (int i = startSize; i <= n; i++)
+        int retryCount = 0;
+
+        for (int i = startSize; i <= n && retryCount <=2; i++)
         {
             Matrix m1;
 
@@ -123,6 +127,7 @@ public static class LinearSystemComparer
                 Console.WriteLine("Approx: Divided by zero =(");
                 Console.WriteLine("Retry");
                 i--;
+                retryCount++;
                 continue;
             }
 
@@ -130,6 +135,7 @@ public static class LinearSystemComparer
             {
                 Console.WriteLine("Approx: Percent difference in length " + difference);
                 Console.WriteLine("Retry");
+                retryCount++;
                 i--;
                 continue;
             }
