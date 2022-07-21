@@ -411,7 +411,7 @@ public static class MatrixUnitTests
         var result = Matrix.Multiply(rightMatrix1, vector);
 
         // Assert
-        Assert.Null(result);
+        Assert.Empty(result);
 
         // Arrange
         // A*v
