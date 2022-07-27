@@ -4,7 +4,6 @@ class SignalGenerator
 {
 	public:
 
-		static uint8_t* GetWaveForm(uint16_t freq);
+		static uint16_t* GetWaveForm(uint16_t freq);
 };
 
-d
