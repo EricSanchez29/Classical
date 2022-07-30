@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FourierTransform.cpp" />
+    <ClCompile Include="GlobalVariables.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="SignalGenerator.cpp" />
   </ItemGroup>
