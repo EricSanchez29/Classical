@@ -54,6 +54,54 @@ public class LinearSystemUnitTests
         Assert.Equal(expectedResult3, result4);
     }
 
+    //public static void TestCramersRule_Chios()
+    //{
+    //    /// 3x3 (identity)
+    //    // Arrange
+    //    var m1 = Matrix.GetIdentityMatrix(3);
+    //    var b1 = new double[3] { 1, 1, 1 };
+    //    var expectedResult = new double[3] { 1, 1, 1 };
+
+    //    // Act
+    //    var result1 = LinearSystemAlgorithms.ChiosCondensationMethod(m1, b1);
+
+    //    // Assert
+    //    Assert.Equal(expectedResult, result1);
+
+    //    /// 3x3
+    //    // Arrange
+    //    m1 = Matrix.GetIdentityMatrix(3);
+    //    m1.matrix[0] = new double[] { 1, 2, 3 };
+    //    m1.matrix[1] = new double[] { 4, 5, 6 };
+    //    m1.matrix[2] = new double[] { 7, 9, 9 };
+    //    var b2 = new double[3] { 1, 5, 10 };
+    //    var expectedResult2 = new double[3] { 1, 1, -Math.Round((2.0 / 3.0), Global.Precision) };
+
+    //    // Act
+    //    var result2 = LinearSystemAlgorithms.ChiosCondensationMethod(m1, b2);
+
+    //    // Assert
+    //    Assert.Equal(expectedResult2, result2);
+
+    //    /// 4x4
+    //    // Arrange
+    //    var m4 = new Matrix(4, 4);
+    //    m4.matrix[0] = new double[] { 2, 4, 6, 8 };
+    //    m4.matrix[1] = new double[] { 2, 6, 9, 0 };
+    //    m4.matrix[2] = new double[] { 1, 5, 9, 3 };
+    //    m4.matrix[3] = new double[] { 3, 1, 2, 6 };
+    //    var b4 = new double[4] { 1, 2, 3, 4 };
+
+    //    // from wolfram alpha
+    //    var expectedResult3 = VectorAlgebra.Round(new double[4] { 247.0 / 178.0, -509.0 / 178.0, 162.0 / 89.0, -14.0 / 89.0 }, 15);
+
+    //    // Act
+    //    var result4 = LinearSystemAlgorithms.ChiosCondensationMethod(m4, b4);
+
+    //    // Assert
+    //    Assert.Equal(expectedResult3, result4);
+    //}
+
     [Fact]
     public static void TestConjugateGradientMethod()
     {

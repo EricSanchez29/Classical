@@ -40,9 +40,9 @@ public static class LinearSystemAlgorithms
 
         // Am about to divide by the original determinant of matrix A
         // making sure I don't divide by zero
-        if (determinant == double.NaN || determinant == 0.0)
+        if (double.IsNaN(determinant) || determinant == 0.0)
         {
-            return null;
+            throw new Exception();
         }
 
         var result = new double[A.Dimensions.Column];
@@ -76,22 +76,18 @@ public static class LinearSystemAlgorithms
 
     public static double[] ConjugateTransposeMethod(Matrix A, double[] b, double[] x = null, double[] _x = null)
     {
-        if ((A?.Dimensions.Row ?? int.MinValue) == int.MinValue)
+        if ((A == null) || ((b?.Length ?? 0) == 0))
         {
-            return null;
+            throw new ArgumentException();
         }
 
-        if (((A?.matrix?[0][0] ?? 0.0) == 0.0)
-            || ((b?.Length ?? 0) == 0))
+        if (A.Dimensions.Row != A.Dimensions.Column)
         {
-            return null;
+            throw new ArgumentException();
         }
 
         // Two initial guesses for x
         x ??= new double[b.Length];
-        _x ??= new double[b.Length];
-        for (int i = 0; i < b.Length; i++)
-            _x[i] = 1;
 
         // Picking the correct algorithnm to approximate the solution,
         // based on if the input matrix m is hermitian or not
@@ -100,8 +96,13 @@ public static class LinearSystemAlgorithms
         // in order to determine if a matrix is hermitian
         // (as opposed to a the conjugate transpose)
         var conjugateTranpose = A.Transpose();
+
         if (!A.Equals(conjugateTranpose))
         {
+            _x ??= new double[b.Length];
+            for (int i = 0; i < b.Length; i++)
+                _x[i] = 1;
+
             // Should never run this algorithm with a Herimitian matrix
             // Runs twice as slow with this method vs conjugate gradient
             return biconjugateGradient(A, b, x, _x);
@@ -129,7 +130,7 @@ public static class LinearSystemAlgorithms
         }
 
         // search direction vector p0 = r0
-        // for the first iteration
+        // (only for the first iteration)
         var p = r;
 
         // for now doing a predetermined number of iterations
@@ -142,13 +143,13 @@ public static class LinearSystemAlgorithms
             if (a_denominator == 0.0)
             {
                 // bad x0 guess?
-                return null;
+                return new double[0];
             }
 
             var a = VectorAlgebra.DotProduct(r, r) / a_denominator;
 
-            // compute x1
-            // x1 = x0 + a0p0
+            // compute xk
+            // xk = x_k-1 + a_k * p_k-1
             x = VectorAlgebra.Add(x, VectorAlgebra.Multiply(a, p));
 
             // compute residual vector r1
@@ -180,7 +181,7 @@ public static class LinearSystemAlgorithms
     public static bool isSuffcientlySmall(double[] vector)
     {
         // ||v|| = v * v < error than can be considered a zero vector
-        if (VectorAlgebra.DotProduct(vector, vector) < 0.001)
+        if (VectorAlgebra.DotProduct(vector, vector) < 0.0001)
         {
             return true;
         }
@@ -266,5 +267,109 @@ public static class LinearSystemAlgorithms
 
         // default case if I break out of the loop without a proper solution
         return VectorAlgebra.Round(x);
+    }
+
+
+    // adapted from Habgood & Arel (2011)
+    public static double[] ChiosCondensationMethod(Matrix A, double[] b)
+    {
+        // current matrix?
+        //var A = new double[1][];
+
+        var result = new double[b.Length];
+
+        // Condensation step size
+        int m = 2;
+
+        // current matrix's size
+        int n = A.Dimensions.Column;
+
+        double[][] reusableminor = new double[n][];
+        for (int i = 0; i < n; i++)
+        {
+            reusableminor[i] = new double[n];
+        }
+
+        // unknowns for this matrix to solve for
+        int mirrorsize = n;
+
+        while ((n - m) > mirrorsize)
+        {
+            var leadDeterminant = A.GetMinorDeterminant(m + 1, m + 1);
+            var leadMinor = new double[m];
+
+            if (leadDeterminant == 0)
+                throw new Exception("Can't divide by zero =(");
+
+            // divide lead column by minor of at A(1,1)
+            for (int i = 0; i < n - 1; i++)
+            {
+                A.matrix[i][1] = A.matrix[i][1] / leadDeterminant;
+            }
+
+            // calculate the minors that are common
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    // each minor will exclude one row & col from this matrix A
+                    reusableminor[i][j] = A.GetMinorDeterminant(i, j);
+                }
+            }
+
+            for (int row = m + 1; row <= n + 1; row++)
+            {
+                // find the lead minors for this row
+                for (int i = 1; i <= m; i++)
+                {
+                    leadMinor[i] = 0;
+
+                    for (int j = 1; j <= m; j++)
+                    {
+                        if (j % 2 != 0)
+                            leadMinor[i] = leadMinor[i] + (A.matrix[row][j] * reusableminor[i][j]);
+                        else
+                            leadMinor[i] = leadMinor[i] - (A.matrix[row][j] * reusableminor[i][j]);
+                    }
+                }
+
+                // Core Loop: find the m x m determinant for each elmement in a
+                for (int col = m + 1; col <= n + 1; col++)
+                {
+                    for (int i = 0; i <= m; i++)
+                    {
+                        // calculate m x m determinant
+                        if (i % 2 == 0)
+                            A.matrix[row][col] = A.matrix[row][col] + (leadMinor[i] * A.matrix[i][col]);
+                        else
+                            A.matrix[row][col] = A.matrix[row][col] - (leadMinor[i] * A.matrix[i][col]);
+                    }
+                }
+            }
+
+            // reduce matrix size by condensation step size
+            n -= m;
+        }
+
+        if (n == 6)
+        {
+            // solve for the subset of unknowns assigned
+            // x[] = cramersrule[a]
+
+            // Should I reuse my old code?
+            // Maybe this becomes more worth while at n == 5 or 6,
+            // which means less condesation steps?
+            return CramersRuleModified(A, b);
+        }
+        else // recursive call to continue condensation
+        {
+            var mirrorA = Matrix.Mirror(A);
+
+            ChiosCondensationMethod(mirrorA, b);
+
+            ChiosCondensationMethod(A, b);
+        }
+
+        return result;
     }
 }

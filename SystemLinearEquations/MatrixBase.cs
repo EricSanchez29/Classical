@@ -25,12 +25,12 @@ public class MatrixBase
     {
         if (row <= 0)
         {
-            throw new ArgumentException(nameof(row), "Matrix size cannot be less than 1");
+            throw new ArgumentException("Matrix size cannot be less than 1", nameof(row));
         }
 
         if (column <= 0)
         {
-            throw new ArgumentException(nameof(column), "Matrix size cannot be less than 1");
+            throw new ArgumentException("Matrix size cannot be less than 1", nameof(column));
         }
 
         if (column == row)
