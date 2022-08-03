@@ -1,36 +1,59 @@
 #include "FourierTransform.h"
-#include <cmath>;
 
-double Pi = 3.141592653589793;
-
-int16_t* FourierTransform::GetDFT(uint16_t* inputArray)
+int16_t* FourierTransform::DFT(uint16_t* inputArray)
 {
-	int16_t static real_result[128];
+	int16_t static real_result[256];
 
 	// might delete later
 	// will just use to compare with FFT
-	int16_t imag_result[128];
+	//int16_t imag_result[128];
 
-	for (int k = 0; k < 128; k++)
+	for (uint16_t k = 0; k < 256; k++)
 	{
-		int16_t real_value = 0;
+		float real_value = 0;
 
-		int16_t imag_value = 0;
+		//float imag_value = 0;
 
-		for (int m = 0; m < 128; m++)
+		for (uint16_t m = 0; m < 256; m++)
 		{
-			real_value = real_value + round(inputArray[m] * cos((2 * Pi * m * k) / 128));
-			imag_value = imag_value + round(inputArray[m] * sin((2 * Pi * m * k) / 128));
+			real_value = real_value + inputArray[m] * cos((2 * M_PI * m * k) / 256);
+			//imag_value = imag_value + inputArray[m] * sin((2 * Pi * m * k) / 256);
 		}
 
-		real_result[k] = real_value;
-		imag_result[k] = imag_value;
+		real_result[k] = round(real_value);
+		//imag_result[k] = round(imag_value);
 	}
 
 	return real_result;
 }
 
-int16_t* FourierTransform::GetFFT(uint16_t* inputArray)
+
+uint8_t FourierTransform::GetPeakFrequency(int16_t* freqSpace)
+{
+	// gives frequency, relative to orignal sample rate in time space
+	// aka the index of the freqArray
+	uint8_t peakFreq = 0;
+
+	// finds the first peak frequency, might discover multiple peaks in the process, 
+	// return the smaller frequency (larger ones are possible overtones)
+	int16_t peakValue = freqSpace[0];
+
+	// find largest value starting from index 0, ignore subsequent equivalent values (repeat peaks)
+	for (uint16_t i = 1; i < 256; i++)
+	{
+		int16_t currentValue = abs(freqSpace[i]);
+
+		if (peakValue < currentValue)
+		{
+			peakValue = currentValue;
+			peakFreq = i;
+		}
+	}
+
+	return peakFreq;
+}
+
+int16_t* FourierTransform::FFT(uint16_t* inputArray)
 {
 	/*
 	Radix 2 FFT
@@ -48,6 +71,8 @@ int16_t* FourierTransform::GetFFT(uint16_t* inputArray)
 									  }
 		 }
 */
+
+// Need to do in next PR
 
 	return nullptr;
 }
