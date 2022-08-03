@@ -23,11 +23,11 @@ uint16_t* SignalGenerator::GetPositiveWaveForm(uint16_t cycles, double amplitude
 
 	// freq == 1 / (cyclelength * Time between measurements)
 
-	uint8_t cycleLength = 256 / cycles;
+	uint16_t cycleLength = 256 / cycles;
 
-	for (uint8_t i = 1; i <= cycles; i++)
+	for (uint16_t i = 1; i <= cycles; i++)
 	{
-		for (uint8_t n = 1; n <= cycleLength; n++)
+		for (uint16_t n = 1; n <= cycleLength; n++)
 		{
 			int16_t num = round((amplitude) * sin((2 * M_PI * n) / cycleLength) + amplitude);
 

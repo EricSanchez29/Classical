@@ -6,16 +6,13 @@
 int main()
 {
 
-    for (uint8_t i = 8; i < 32; i++)
+    for (uint8_t i = 1; i <= 32; i++)
     {
-
-
-
         uint16_t* signal;
         // can I do this in one line?
         signal = SignalGenerator::GetPositiveWaveForm(i, 511.5);
 
-        /*for (uint8_t j = 0; j < 256; j++)
+        /*for (uint16_t j = 0; j < 128; j++)
         {
             std::cout << signal[j];
             std::cout << ",";
@@ -27,7 +24,7 @@ int main()
 
         signal_freqSpace = FourierTransform::DFT(signal);
 
-        /*for (uint8_t i = 0; i < 256; i++)
+        /*for (uint16_t i = 0; i < 256; i++)
         {
             std::cout << signal_freqSpace[i];
             std::cout << ",";

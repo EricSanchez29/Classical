@@ -45,12 +45,12 @@ uint8_t FourierTransform::GetPeakFrequency(int16_t* freqSpace)
 	//int16_t averageValue = peakValue;
 
 	// is this actually worth doing?
-	int16_t i;
+	uint16_t i;
 
 	// find largest value starting from index 0, ignore subsequent equivalent values (repeat peaks)
 	for (i = 0; i < 256; i++)
 	{
-		int16_t currentValue = freqSpace[i];
+		uint16_t currentValue = abs(freqSpace[i]);
 
 		if (peakValue < currentValue)
 		{
