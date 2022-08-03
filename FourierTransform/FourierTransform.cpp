@@ -37,8 +37,6 @@ uint8_t FourierTransform::GetPeakFrequency(int16_t* freqSpace)
 	// finds the first peak frequency, might discover multiple peaks in the process, 
 	// return the smaller frequency (larger ones are possible overtones)
 
-	//128 elements in freqArray
-
 	int16_t peakValue = freqSpace[0];
 
 	// keep track of avg value;
@@ -48,7 +46,7 @@ uint8_t FourierTransform::GetPeakFrequency(int16_t* freqSpace)
 	uint16_t i;
 
 	// find largest value starting from index 0, ignore subsequent equivalent values (repeat peaks)
-	for (i = 0; i < 256; i++)
+	for (i = 1; i < 256; i++)
 	{
 		uint16_t currentValue = abs(freqSpace[i]);
 
