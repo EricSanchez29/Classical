@@ -201,6 +201,24 @@ public static class LinearSystemComparer
         verboseStream.Close();
     }
 
+    private static void compareChiosMethod(int startSize, int endSize, int comparison)
+    {
+        switch (comparison)
+        {
+            case 0:
+
+                break;
+
+            case 1:
+                break;
+
+
+            default:
+                break;
+        }
+
+    }
+
     // Creates directory for file if it doesn't already exist
     private static string getFileName()
     {

@@ -361,7 +361,7 @@ public static class LinearSystemAlgorithms
             // which means less condesation steps?
             return CramersRuleModified(A, b);
         }
-        else // recursive call to continue condensation
+        else // has recursive calls to continue condensation steps
         {
             var mirrorA = Matrix.Mirror(A);
 
