@@ -184,7 +184,7 @@ public static class MatrixUnitTests
     }
 
     [Fact]
-    public static void TestGetMinorDeterminant()
+    public static void TestCalculateMinorDeterminant()
     {
         /// 3x3
         // Arrange
@@ -227,7 +227,7 @@ public static class MatrixUnitTests
         expected4.matrix[2] = new double[] { 8, 2, 1 }; 
 
         // Act
-        var result4 = testMatrix4.GetMinorDeterminant(1, 1);
+        var result4 = testMatrix4.CalculateMinorDeterminant(1, 1);
 
         // Assert
         Assert.Equal(expected4.GetDeterminant(), result4);
@@ -239,7 +239,7 @@ public static class MatrixUnitTests
         expected4.matrix[2] = new double[] { 8, 2, 1 };
 
         // Act
-        result4 = testMatrix4.GetMinorDeterminant(1, 1);
+        result4 = testMatrix4.CalculateMinorDeterminant(1, 1);
 
         // Assert
         Assert.Equal(expected4.GetDeterminant(), result4);

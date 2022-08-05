@@ -224,7 +224,7 @@ public static class LinearSystemAlgorithms
             if (a_denominator == 0.0)
             {
                 // bad x0 guess?
-                return null;
+                return Array.Empty<double>();
             }
 
             var a = VectorAlgebra.DotProduct(_r, r) / a_denominator;
@@ -271,7 +271,7 @@ public static class LinearSystemAlgorithms
 
 
     // adapted from Habgood & Arel (2011)
-    public static double[] ChiosCondensationMethod(Matrix A, double[] b)
+    public static double[] ChiosExtendedCondensationMethod(Matrix A, double[] b)
     {
         // current matrix?
         //var A = new double[1][];
@@ -295,7 +295,7 @@ public static class LinearSystemAlgorithms
 
         while ((n - m) > mirrorsize)
         {
-            var leadDeterminant = A.GetMinorDeterminant(m + 1, m + 1);
+            var leadDeterminant = A.CalculateMinorDeterminant(m + 1, m + 1);
             var leadMinor = new double[m];
 
             if (leadDeterminant == 0)
@@ -313,7 +313,7 @@ public static class LinearSystemAlgorithms
                 for (int j = 0; j < m; j++)
                 {
                     // each minor will exclude one row & col from this matrix A
-                    reusableminor[i][j] = A.GetMinorDeterminant(i, j);
+                    reusableminor[i][j] = A.CalculateMinorDeterminant(i, j);
                 }
             }
 
@@ -365,9 +365,9 @@ public static class LinearSystemAlgorithms
         {
             var mirrorA = Matrix.Mirror(A);
 
-            ChiosCondensationMethod(mirrorA, b);
+            ChiosExtendedCondensationMethod(mirrorA, b);
 
-            ChiosCondensationMethod(A, b);
+            ChiosExtendedCondensationMethod(A, b);
         }
 
         return result;

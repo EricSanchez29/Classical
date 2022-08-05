@@ -137,9 +137,6 @@ public class Matrix : MatrixBase
 
         double determinant = 0;
 
-        //_dictionaryCalls = 0;
-
-
         // dictionary is growing at 2^n for first pass
         // then 2^(n-1) for each subsequent GetDeterminant() call
         //
@@ -210,7 +207,8 @@ public class Matrix : MatrixBase
         //    count = i * count;
         //}
 
-        //Console.WriteLine("Theoretical calls for Laplace expansion:" + count);
+        //Console.WriteLine("Theoretical ca
+        //ls for Laplace expansion:" + count);
 
         return determinant;
     }
@@ -345,11 +343,10 @@ public class Matrix : MatrixBase
         }
     }
 
-    // Finds the determinant of the this.matrix
-    // created by ignoring row and column selected
-    // will use my old method of creating a dictionary to help with calculations
-    // but this doesnt
-    public double GetMinorDeterminant(int row, int column)
+    // Finds the determinant of a submatrix of this.matrix
+    // created by ignoring the row and column selected.
+    // Will use my old method of creating a dictionary to help with calculations
+    public double CalculateMinorDeterminant(int row, int column)
     {
         if ((row < 1) || (row > Dimensions.Row) || (column < 1) || (column > Dimensions.Column))
         {
@@ -426,7 +423,7 @@ public class Matrix : MatrixBase
         return determinant;
     }
 
-    // Scenarioss (I won't ever call out of bounds to begin with, aka calling the ignored column or coordinates which don't exist in the matrix)
+    // Scenarios (I [shouldn't?]won't ever call out of bounds to begin with, aka calling the ignored column or coordinates which don't exist in the matrix)
     //
     // 1st: row < 2 + end of matrix
     //      and the ignored row is the last row in meatrix
