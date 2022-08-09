@@ -1,8 +1,8 @@
 #include "FourierTransform.h"
 
-int16_t* FourierTransform::DFT(uint16_t* inputArray)
+int32_t* FourierTransform::DFT(uint16_t* inputArray)
 {
-	int16_t static real_result[256];
+	int32_t static real_result[256];
 
 	// might delete later
 	// will just use to compare with FFT
@@ -28,7 +28,7 @@ int16_t* FourierTransform::DFT(uint16_t* inputArray)
 }
 
 
-uint8_t FourierTransform::GetPeakFrequency(int16_t* freqSpace)
+uint8_t FourierTransform::GetPeakFrequency(int32_t* freqSpace)
 {
 	// gives frequency, relative to orignal sample rate in time space
 	// aka the index of the freqArray
@@ -70,9 +70,20 @@ int16_t* FourierTransform::FFT(uint16_t* inputArray)
 										x_2m+1 * W^2mk
 									  }
 		 }
-*/
+	*/
 
-// Need to do in next PR
+	// Based on the number of complex multiplications and complex additions
+	//  O(N) = N log_2 N
+	// where N is the length of the input array
+
+
+
 
 	return nullptr;
+}
+
+
+int16_t* FourierTransform::fft_helper(uint16_t* inputArray)
+{
+
 }
