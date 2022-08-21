@@ -6,7 +6,7 @@ int32_t* FourierTransform::DFT(uint16_t* inputArray)
 
 	// might delete later
 	// will just use to compare with FFT
-	//int16_t imag_result[128];
+	//int16_t imag_result[256];
 
 	for (uint16_t k = 0; k < 256; k++)
 	{
@@ -85,5 +85,5 @@ int16_t* FourierTransform::FFT(uint16_t* inputArray)
 
 int16_t* FourierTransform::fft_helper(uint16_t* inputArray)
 {
-
+	return nullptr;
 }

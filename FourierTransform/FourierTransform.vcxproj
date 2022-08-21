@@ -142,6 +142,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="A_sample.txt" />
+    <Text Include="A_sample2.txt" />
+    <Text Include="C_sample.txt" />
+    <Text Include="C_sample2.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

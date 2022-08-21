@@ -42,5 +42,14 @@
     <Text Include="A_sample.txt">
       <Filter>Source Files</Filter>
     </Text>
+    <Text Include="C_sample.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="A_sample2.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="C_sample2.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
