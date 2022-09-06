@@ -69,15 +69,6 @@ This project contains 3 different algorithms for solving systems of linear equat
 	(symmetric across the diagonal) while the biconjugate method can solve any real matrix. Though in practice you should not
 	solve hermitian systems with the biconjugate method as you would be doing twice the computational effort with no payoff
 	
-	
-#################################################################################################################################
-
-
-										END OF MATH SECTION, CODE DESCRIPTION BELOW
-
-
-
-#################################################################################################################################
 
 # Code description:
 
@@ -112,10 +103,8 @@ This project contains 3 different algorithms for solving systems of linear equat
 			string s = "1,2,5,7,9" a string of 10 chars
 			
 
-
 	- on my machine I went from calculating n=11 in ~2 minutes (with the naive approach) to n=21 in ~2 minutes, 
 		though this solution slows down at around n=23
-
 
 
 - a standard implementation of the Conjugate Gradient method

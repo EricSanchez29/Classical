@@ -273,10 +273,15 @@ public static class LinearSystemAlgorithms
     // adapted from Habgood & Arel (2011)
     public static double[] ChiosExtendedCondensationMethod(Matrix A, double[] b)
     {
-        // current matrix?
-        //var A = new double[1][];
-
         var result = new double[b.Length];
+
+
+        return result;
+    }
+
+    private static double[] ChiosExtendedCondensationMethodHelper(Matrix A, int currentSize, int mirrorSize)
+    {
+        var result = new double[mirrorSize];
 
         // Condensation step size
         int m = 2;
@@ -284,6 +289,8 @@ public static class LinearSystemAlgorithms
         // current matrix's size
         int n = A.Dimensions.Column;
 
+        // reusable matrix must be the same size as input A
+        // as it contains all minor dets for every position in A
         double[][] reusableminor = new double[n][];
         for (int i = 0; i < n; i++)
         {
