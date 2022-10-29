@@ -219,12 +219,12 @@ public static class LinearSystemComparer
 
     }
 
-    // Creates directory for file if it doesn't already exist
     private static string getFileName()
     {
         // example "6/22/2022 1:02:57 AM";
         var folderName = @"C:\logs\MathApp\";
 
+        // create a directory for a file if it doesn't already exist
         Directory.CreateDirectory(folderName);
 
         var fileName = DateTime.Now.ToString().Replace(' ','_').Replace(':','_').Replace('/','_');

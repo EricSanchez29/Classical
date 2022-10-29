@@ -4,6 +4,10 @@ public static class LinearSystemAlgorithms
 {
     private static readonly int _precision = Global.Precision;
 
+    /// Cramer's Rule Modified
+    #region
+
+
     // An implementation of Cramer's rule
     //
     //      this requires the determinant of the input matrix to be non zero
@@ -73,10 +77,13 @@ public static class LinearSystemAlgorithms
 
         return result;
     }
+    #endregion
 
-    public static double[] ConjugateTransposeMethod(Matrix A, double[] b, double[] x = null, double[] _x = null)
+    /// Conjugate Transpose Method
+    #region
+    public static double[] ConjugateTransposeMethod(Matrix A, double[] b, double[]? x = null, double[]? _x = null)
     {
-        if ((A == null) || ((b?.Length ?? 0) == 0))
+        if ((A == null) || (b == null) || (b.Length == 0))
         {
             throw new ArgumentException();
         }
@@ -177,7 +184,8 @@ public static class LinearSystemAlgorithms
         return VectorAlgebra.Round(x);
     }
 
-    // Used to help determine when I have a viable solution 
+    // Used to help determine when I have a viable solution
+    // for the to conjugate grad methods
     public static bool isSuffcientlySmall(double[] vector)
     {
         // ||v|| = v * v < error than can be considered a zero vector
@@ -187,9 +195,9 @@ public static class LinearSystemAlgorithms
         }
 
         return false;
-    }
+    } 
 
-    // Can handle any real valued matrix (A)
+    // Can handle any real valued matrix (A),
     // real valued vectors b, x and & _x
     private static double[] biconjugateGradient(Matrix A, double[] b, double[] x, double[] _x)
     {
@@ -268,26 +276,42 @@ public static class LinearSystemAlgorithms
         // default case if I break out of the loop without a proper solution
         return VectorAlgebra.Round(x);
     }
+    #endregion
 
-
+    /// Chios Extended Condensation Method
+    /// (Depends on Cramer's Rule Modified)
+    #region
     // adapted from Habgood & Arel (2011)
     public static double[] ChiosExtendedCondensationMethod(Matrix A, double[] b)
     {
-        var result = new double[b.Length];
+        // For now only handle square matricies
+        if (!A.IsSquare || A.Dimensions.Row != b.Length)
+        {
+            throw new ArgumentException("Not square, or # rows in A doesn't equal length of b");
+        }
 
-
-        return result;
+// these inputs might not be right
+        return ChiosExtendedCondensationMethodHelper(A, b, b.Length, b.Length);
     }
 
-    private static double[] ChiosExtendedCondensationMethodHelper(Matrix A, int currentSize, int mirrorSize)
-    {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="A"></param>
+    /// <param name="b"></param>
+    /// <param name="currentSize"></param>
+    /// <param name="mirrorSize"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    private static double[] ChiosExtendedCondensationMethodHelper(Matrix A, double[] b, int currentSize, int mirrorSize)
+    { 
         var result = new double[mirrorSize];
 
         // Condensation step size
         int m = 2;
 
         // current matrix's size
-        int n = A.Dimensions.Column;
+        int n = currentSize;            // unnecesary assignment?
 
         // reusable matrix must be the same size as input A
         // as it contains all minor dets for every position in A
@@ -357,26 +381,33 @@ public static class LinearSystemAlgorithms
             // reduce matrix size by condensation step size
             n -= m;
         }
-
+        // End condensation, solve matrix
         if (n == 6)
         {
             // solve for the subset of unknowns assigned
-            // x[] = cramersrule[a]
+            // x[] = cramersrule[b]
 
             // Should I reuse my old code?
             // Maybe this becomes more worth while at n == 5 or 6,
             // which means less condesation steps?
+
+
+
+
             return CramersRuleModified(A, b);
         }
-        else // has recursive calls to continue condensation steps
+        // Continue condensation steps
+        else
         {
             var mirrorA = Matrix.Mirror(A);
 
-            ChiosExtendedCondensationMethod(mirrorA, b);
+            ChiosExtendedCondensationMethodHelper(A, b, currentSize / 2, 1);
 
-            ChiosExtendedCondensationMethod(A, b);
+            ChiosExtendedCondensationMethodHelper(mirrorA, b, currentSize/2, 1);
         }
 
         return result;
     }
+    #endregion
+
 }

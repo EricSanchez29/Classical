@@ -8,7 +8,7 @@ public static class VectorAlgebra
     // Sqrt(a * a) = lenght of a
     //
     // Commutative
-    public static double DotProduct(double[] leftVector, double[] rightVector = null)
+    public static double DotProduct(double[] leftVector, double[] rightVector)
     {
         if (rightVector == null)
             rightVector = leftVector;
@@ -24,6 +24,19 @@ public static class VectorAlgebra
 
         return result;
     }
+
+    public static double GetVectorLength(double[] vector)
+    {
+        double answer = 0;
+
+        for (int i = 0; i < vector.Length; i++)
+        {
+            answer += vector[i] * vector[i];
+        }
+
+        return Math.Sqrt(answer);
+    }
+
 
     // a * b = |a||b|cos(theta)
     //
@@ -115,8 +128,8 @@ public static class VectorAlgebra
         if (testVector == null || refVector == null || testVector.Length != refVector.Length)
             return double.MaxValue;
 
-        var testLength = Math.Sqrt(DotProduct(testVector));
-        var refLength = Math.Sqrt(DotProduct(refVector));
+        var testLength = GetVectorLength(testVector);
+        var refLength = GetVectorLength(refVector);
 
         // if reference vector length is 0,
         // percent diff is undefined
@@ -137,8 +150,15 @@ public static class VectorAlgebra
         var rand = new Random();
 
         for (int i = 0; i < length; i++)
-        {                         
-            result[i] = rand.NextDouble();
+        {
+            if (integer)
+            {
+                result[i] = rand.NextInt64();
+            }
+            else
+            {
+                result[i] = rand.NextDouble();
+            }
         }
 
         return result;
