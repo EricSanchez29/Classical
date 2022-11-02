@@ -326,7 +326,7 @@ public static class LinearSystemAlgorithms
 
         while ((n - m) > mirrorsize)
         {
-            var leadDeterminant = A.CalculateMinorDeterminant(m + 1, m + 1);
+            var leadDeterminant = A.CalculateMinor(m + 1, m + 1);
             var leadMinor = new double[m];
 
             if (leadDeterminant == 0)
@@ -344,7 +344,7 @@ public static class LinearSystemAlgorithms
                 for (int j = 0; j < m; j++)
                 {
                     // each minor will exclude one row & col from this matrix A
-                    reusableminor[i][j] = A.CalculateMinorDeterminant(i, j);
+                    reusableminor[i][j] = A.CalculateMinor(i, j);
                 }
             }
 

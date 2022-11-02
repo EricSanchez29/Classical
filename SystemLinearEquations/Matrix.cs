@@ -1,14 +1,14 @@
 using System.Text;
 
-namespace  Maths.LinearAlgebra;
+namespace Maths.LinearAlgebra;
 
-// This class doesn't allow you to change the dimensions of matrix
-// Need to create a new instance to do that
+// This class doesn't allow you to change the dimensions of a matrix (even for Transpose())
+// Need to create a new instance instead 
 public class Matrix : MatrixBase
 {
     // this might slow down 
     private Dictionary<string, double> _originalDeterminants = new Dictionary<string, double>();
-    
+
     // used for benchmarking
     //private int _2x2_Count = 0;
     //private int _dictionaryCalls = 0;
@@ -17,9 +17,11 @@ public class Matrix : MatrixBase
     // however arrays are 0 indexed, deal with it
     public double[][] matrix;
 
-    // has some bug in it?
+    // fix this!
     public override bool Equals(object obj)
     {
+        // could also write
+        // (this is null && obj is null
         if (this == null && obj == null)
             return true;
 
@@ -46,8 +48,8 @@ public class Matrix : MatrixBase
     }
 
     // Using math convention:
-    // Matrices are referred to in this row by column (y, x) order
-    // same with matrix elements Ayx with A11 as the first element in the top left corner
+    // Matrices are referred to by row by column (y, x) order
+    // same with matrix elements Ayx  (A11 as the first element in the top left corner)
     public Matrix(int row, int column) : base(row, column)
     {
         this.matrix = new double[row][];
@@ -58,6 +60,7 @@ public class Matrix : MatrixBase
 
     // Don't currently check that the inputMatrix has consistently sized arrays
     // double[i][].Length == double[i+1][].Length
+    // (aka is not a jagged array)
     public Matrix(double[][] inputMatrix) : base(inputMatrix?.Length ?? 0, inputMatrix?[0].Length ?? 0)
     {
         if (inputMatrix == null)
@@ -96,7 +99,7 @@ public class Matrix : MatrixBase
 
         for (int i = 0; i < size; i++)
             result.matrix[i][i] = 1;
-        
+
         return result;
     }
 
@@ -107,15 +110,15 @@ public class Matrix : MatrixBase
     //  isCramersRule == true && cramersRuleIteration != 0
     public double GetDeterminant(bool isCramersRule = false, int cramersRuleIteration = 0)
     {
-        if (this.matrix == null || !this.IsSquare)
+        if (this.matrix is null || !this.IsSquare)
             return double.NaN;
 
-        if(this.Dimensions.Column == 1)
-           return this.matrix[0][0];
+        if (this.Dimensions.Column == 1)
+            return this.matrix[0][0];
 
-        if(this.Dimensions.Column == 2)
-           return  Math.Round(this.matrix[0][0]*this.matrix[1][1], Global.Precision) - Math.Round(this.matrix[0][1]*this.matrix[1][0], Global.Precision);
-     
+        if (this.Dimensions.Column == 2)
+            return Math.Round(this.matrix[0][0] * this.matrix[1][1], Global.Precision) - Math.Round(this.matrix[0][1] * this.matrix[1][0], Global.Precision);
+
         // This is an implementation of the Laplace Expansion method of calculating a determinant
         // aka det(A) = Sum {(-1)^i+j * Aij * Mij}
         //
@@ -150,9 +153,9 @@ public class Matrix : MatrixBase
         var dictionarySizeBound = Math.Pow(2, power);
 
         Dictionary<string, double> calculatedDeterminants = new Dictionary<string, double>(Convert.ToInt32(dictionarySizeBound));
-        
+
         var allowed = new List<int>();
-        for(int c = 1; c <= Dimensions.Column; c++)
+        for (int c = 1; c <= Dimensions.Column; c++)
             allowed.Add(c);
 
         // using regular matrix coordinate notation
@@ -291,7 +294,7 @@ public class Matrix : MatrixBase
             allowedColumns.Remove(column);
 
             // at this point, only 2 columns should be allowed
-            if (allowedColumns.Count !=  2)
+            if (allowedColumns.Count != 2)
                 throw new Exception("Something went terribly wrong");
 
             int leftColumn = allowedColumns[0];
@@ -306,7 +309,7 @@ public class Matrix : MatrixBase
 
             //bool noModifiedColumn = allowedColumns.Contains(modfiedColumn);
             // this should be more efficent than above?
-            bool containsModifiedColumn = ((allowedColumns[0] == modfiedColumn) || (allowedColumns[1] == modfiedColumn)); 
+            bool containsModifiedColumn = ((allowedColumns[0] == modfiedColumn) || (allowedColumns[1] == modfiedColumn));
 
             allowedColumns.Add(column);
             allowedColumns.Sort();
@@ -346,11 +349,11 @@ public class Matrix : MatrixBase
     // Finds the determinant of a submatrix of this.matrix
     // created by ignoring the row and column selected.
     // Will use my old method of creating a dictionary to help with calculations
-    public double CalculateMinorDeterminant(int row, int column)
+    public double CalculateMinor(int row, int column)
     {
         if ((row < 1) || (row > Dimensions.Row) || (column < 1) || (column > Dimensions.Column))
         {
-            throw new ArgumentOutOfRangeException("Cannot commute minor " + row + "x"+ column );
+            throw new ArgumentOutOfRangeException("Cannot compute minor " + row + "x" + column);
         }
 
         // should i even by creating a (1x1) matrix before calling this function?
@@ -382,45 +385,71 @@ public class Matrix : MatrixBase
 
         Dictionary<string, double> calculatedDeterminants = new Dictionary<string, double>(Convert.ToInt32(dictionarySizeBound));
 
-        var allowed = new List<int>();
+        var allowedColumns = new List<int>(Dimensions.Column - 1);
         for (int c = 1; c <= Dimensions.Column; c++)
         {
-            // don't include this column
             if (c == column)
                 continue;
 
-            allowed.Add(c);
+            allowedColumns.Add(c);
         }
 
-        double determinant = 0;
-
-        int firstRow = 1;
-
-        // here the first row is the row i want to ignore
-        if (firstRow == row)
+        var allowedRows = new List<int>(Dimensions.Row - 1);
+        for (int c = 1; c <= Dimensions.Row; c++)
         {
-            //simply skip the first row, proceed as normal, since I'm traveling down the matrix
-            firstRow = 2;
+            // don't include this column
+            if (c == row)
+                continue;
+
+            allowedRows.Add(c);
         }
+
+        double determinant = getMinorDetHelper(calculatedDeterminants, allowedColumns, allowedRows);
 
         // not based on dimensions of the bigger matrix
-        for (int i = 0; i < allowed.Count - 1; i++)
-        {
-            int thisColumn = allowed[i];
-            double cofactorDet = getMinorDetHelper(firstRow, thisColumn, calculatedDeterminants, allowed, row, column);
+        //for (int i = 0; i < Dimensions.Column - 1; i++)
+        //{
+        //    int thisColumn = column;
+        //    //allowedColumns.Remove(thisColumn);
 
-            if (allowed.Count > 2)
-            {
-                cofactorDet *= matrix[firstRow - 1][thisColumn - 1];
-            }
+        //    double cofactorDet = matrix[row - 1][thisColumn - 1] * getMinorDetHelper(calculatedDeterminants, allowedColumns, allowedRows);
 
-            if (i % 2 == 0)
-                determinant += cofactorDet;
-            else
-                determinant -= cofactorDet;
-        }
+        //    if (getSign(row, thisColumn))
+        //        determinant += cofactorDet;
+        //    else
+        //        determinant -= cofactorDet;
+
+        //    allowedColumns.Add(thisColumn);
+
+        //    allowedColumns.Sort();
+        //}
+        //
+
+
+        // why?
+        if (getSign(row, column))
+            determinant *= 1;
+        else
+            determinant *= -1;
 
         return determinant;
+    }
+
+    // + true
+    // - odd
+    private static bool getSign(int row, int column)
+    {
+        if ((isEven(row) && isEven(column)) || (!isEven(row)) && (!isEven(column)))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool isEven(int num)
+    {
+        return num % 2 == 0;
     }
 
     // Scenarios (I [shouldn't?]won't ever call out of bounds to begin with, aka calling the ignored column or coordinates which don't exist in the matrix)
@@ -432,65 +461,79 @@ public class Matrix : MatrixBase
     // 3rd: this.row = 2 + end matrix
     //      and the ignored row is the next row (2nd to last row)
     // 
-    private double getMinorDetHelper(int row, int col, Dictionary<string, double> calculations, List<int> allowedColumns, int ignoreRow, int ignoreColumn)
+
+    // need to add ignore row list
+    // consider making the allowedcolumns and allowedRows dictionaries
+    private double getMinorDetHelper(Dictionary<string, double> calculations, List<int> allowedColumns, List<int> allowedRows)
     {
-        if ((row == ignoreRow) || (col == ignoreColumn))
+        if (allowedRows.Count != allowedColumns.Count)
         {
-            throw new Exception("Not allowed");
+            throw new Exception("Oops");
         }
-        
-        // ensures that the input row/column at least exists in the matrix
-        if ((row <= 0) || (col <= 0) || (row > Dimensions.Row) || (col > this.Dimensions.Column))
-            throw new Exception("Also not allowed");
 
         //1st: this.row is more than two rows less(higher on the matrix, earlier call) than the end of the matrix(aka row == Dimensions.Row)
         //      and the ignored row is the last row
         // 
-        if (allowedColumns.Count > 2)
+        //                              extra careful for now
+        if (allowedColumns.Count > 2 && allowedRows.Count > 2)
         {
-            allowedColumns.Remove(col);
             double determinant = 0;
 
             int length = allowedColumns.Count;
 
-            byte[] keyArray = new byte[length];
+            byte[] keyArray = new byte[length * 2];
 
             for (int i = 0; i < length; i++)
             {
                 keyArray[i] = Convert.ToByte(allowedColumns[i]);
             }
 
+            for (int i = 0; i < length; i++)
+            {
+                keyArray[i + length] = Convert.ToByte(allowedRows[i]);
+            }
+
             string key = Encoding.Default.GetString(keyArray);
+
+            
 
             if (!calculations.ContainsKey(key))
             {
-                // next iteration
-                // (be mindful of column and row which are not allowed but still contained in matrix[][]
-                int nextRow = row + 1;
+                int removeRow = allowedRows[0];
 
-                // i'm supposed to ingore this row for every calculation of the minor determinant
-                if (nextRow == ignoreRow)
+                int removeColumn;
+                allowedRows.Remove(removeRow);
+
+                for (int i = 0; i < length; i++)
                 {
-                    // skip to next
-                    nextRow++;
-                }
+                    removeColumn = allowedColumns[i];
 
-                for (int i = 0; i < allowedColumns.Count; i++)
-                {
-                    if (allowedColumns[i] == ignoreColumn)
-                    {
-                        throw new Exception("Something went wrong");
-                    }    
+                    allowedColumns.Remove(removeColumn);
 
-                    var mult = this.matrix[row][allowedColumns[i] - 1] * getMinorDetHelper(nextRow, allowedColumns[i], calculations, allowedColumns, ignoreRow, ignoreColumn);
+                    var mult = this.matrix[removeRow - 1][removeColumn - 1];
 
-                    if (i % 2 == 0)
+                    mult = mult * getMinorDetHelper(calculations, allowedColumns, allowedRows);
+
+
+                    // even/even = even
+                    // odd/even = odd
+                    // odd/odd = odd
+                    //
+
+                    // this is wrong depends on number being excluded
+                    if (getSign(removeRow, removeColumn))
                         determinant += mult;
                     else
                         determinant -= mult;
+
+
+                    allowedColumns.Add(removeColumn);
+                    allowedColumns.Sort();
                 }
 
                 calculations.Add(key, determinant);
+                allowedRows.Sort();
+                allowedRows.Add(removeRow);
             }
             else
             {
@@ -498,58 +541,63 @@ public class Matrix : MatrixBase
                 determinant = calculations[key];
             }
 
-            allowedColumns.Add(col);
-            allowedColumns.Sort();
-
             return determinant;
         }
 
         // this needs different logic
-        else if (row == matrix.Length - 2)
+        else if (allowedColumns.Count == 2)
         {
-            int nextRow = -1;
+            /*
+             *  3 ways to reach the final 2x2 determinant calculation
+             * 
+             *   |   ...    | Not Allowed
+             *   |   ...    | Allowed
+             *   |   ...    | Allowed
+             * 
+             *   |   ...    | Allowed
+             *   |   ...    | Not Allowed
+             *   |   ...    | Allowed
+             * 
+             *   |   ...    | Allowed
+             *   |   ...    | Allowed
+             *   |   ...    | Not Allowed
+             * 
+             * 
+             * 
+             * 
+             * 
+             */
 
-            // and the ignored row is the last row
-            if (row + 2 == ignoreRow)
-            {
-                nextRow = row + 1;
-            }
-            // 3rd: this.row is two rows less ... 
-            //      and the ignored row is the next row (2nd to last row)
-            else if (row + 1 == ignoreRow)
-            {
-                nextRow = row + 2;
-            }
             // calculate the case: det(2x2)
             // there is no smaller cofactor
             // so, no smaller minor to calculate
             // Therefore, calculate this.minor
 
-            //allowedColumns.Remove(col);
-
-            // at this point, only 2 columns should be allowed
-            if (allowedColumns.Count != 2)
-                throw new Exception("Something went terribly wrong");
 
             int leftColumn = allowedColumns[0];
             int rightColumn = allowedColumns[1];
+            int topRow = allowedRows[0];
+            int bottomRow = allowedRows[1];
 
-            var keyArray = new byte[2];
+            // could see a big performance impact on this algorithm
+            // need to do this to accomodate ignoring rows
+            var keyArray = new byte[4];
 
             keyArray[0] = Convert.ToByte(leftColumn);
             keyArray[1] = Convert.ToByte(rightColumn);
-
+            keyArray[2] = Convert.ToByte(topRow);
+            keyArray[3] = Convert.ToByte(bottomRow);
             string key = Encoding.Default.GetString(keyArray);
 
             //allowedColumns.Add(col);
             //allowedColumns.Sort();
 
-           if (!calculations.ContainsKey(key))
+            if (!calculations.ContainsKey(key))
             {
                 // Used to benchmark vs no dictionary implementation
                 //_2x2_Count++;
 
-                var det = (this.matrix[row - 1][leftColumn - 1] * this.matrix[nextRow-1][rightColumn - 1]) - (this.matrix[nextRow - 1][leftColumn - 1] * this.matrix[row - 1][rightColumn - 1]);
+                var det = (this.matrix[topRow - 1][leftColumn - 1] * this.matrix[bottomRow - 1][rightColumn - 1]) - (this.matrix[bottomRow - 1][leftColumn - 1] * this.matrix[topRow - 1][rightColumn - 1]);
                 calculations.Add(key, det);
 
                 return det;
@@ -561,7 +609,7 @@ public class Matrix : MatrixBase
                 return calculations[key];
             }
         }
-        
+
         else
         {
             // This is only ever reached if the input row is too large
@@ -607,7 +655,7 @@ public class Matrix : MatrixBase
             if (columnLength % 2 != 0)
             {
                 skipColumn = true;
-                midPoint = destColumn/ 2; // odd numbers round down
+                midPoint = destColumn / 2; // odd numbers round down
             }
             // if even number of columns, swap all
             else
@@ -615,7 +663,7 @@ public class Matrix : MatrixBase
                 skipColumn = false;
                 midPoint = (columnLength / 2);
             }
-            
+
             int sourceColumn;
 
             for (sourceColumn = 0; sourceColumn < midPoint; sourceColumn++)
@@ -666,7 +714,7 @@ public class Matrix : MatrixBase
                 result.matrix[j][i] = random;
             }
         }
-        
+
         return result;
     }
 
@@ -689,7 +737,7 @@ public class Matrix : MatrixBase
                 result.matrix[i][j] = rand.NextDouble();
             }
         }
-        
+
         return result;
     }
 
@@ -707,10 +755,10 @@ public class Matrix : MatrixBase
     }
 
     // left and right don't matter here, commutative
-    public static Matrix? Add(Matrix leftOperand, Matrix rightOperand)
+    public static Matrix Add(Matrix leftOperand, Matrix rightOperand)
     {
-        if (leftOperand == null || rightOperand == null || (leftOperand.Dimensions != rightOperand.Dimensions) )
-            return null;
+        if (leftOperand is null || rightOperand is null || (leftOperand.Dimensions != rightOperand.Dimensions))
+            throw new ArgumentException("Null or mismatched matricies as parameters");
 
         var result = Copy(leftOperand);
 
@@ -747,7 +795,7 @@ public class Matrix : MatrixBase
                 double newElement = 0;
 
                 for (int i = 0; i < leftOperand.Dimensions.Column; i++)
-                    newElement += Math.Round(leftOperand.matrix[newMatrixRow][i]*rightOperand.matrix[i][newMatrixColumn], Global.Precision);
+                    newElement += Math.Round(leftOperand.matrix[newMatrixRow][i] * rightOperand.matrix[i][newMatrixColumn], Global.Precision);
 
 
                 newMatrix.matrix[newMatrixRow][newMatrixColumn] = newElement;
@@ -756,7 +804,7 @@ public class Matrix : MatrixBase
 
         return newMatrix;
     }
-    
+
     public static double[] Multiply(Matrix leftOperand, double[] rightOperand, bool swapOperands = false)
     {
         if (swapOperands)
@@ -771,7 +819,7 @@ public class Matrix : MatrixBase
                 var sum = 0.0;
 
                 for (int j = 0; j < leftOperand.Dimensions.Row; j++)
-                    sum += Math.Round(rightOperand[j]*leftOperand.matrix[j][i], Global.Precision);
+                    sum += Math.Round(rightOperand[j] * leftOperand.matrix[j][i], Global.Precision);
 
                 result[i] = sum;
             }
@@ -790,7 +838,7 @@ public class Matrix : MatrixBase
                 var sum = 0.0;
 
                 for (int j = 0; j < rightOperand.Length; j++)
-                    sum += Math.Round(leftOperand.matrix[i][j]*rightOperand[j], Global.Precision);
+                    sum += Math.Round(leftOperand.matrix[i][j] * rightOperand[j], Global.Precision);
 
                 result[i] = sum;
             }
