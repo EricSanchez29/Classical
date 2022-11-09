@@ -56,7 +56,7 @@ public class VectorAlgebraUnitTests
         var expected1 = "<1,1,1>";
         
         // Act & Assert
-        Assert.Equal(expected1, VectorAlgebra.PrintVector(a));
+        Assert.Equal(expected1, VectorAlgebra.ToString(a));
 
 
         // Arrange

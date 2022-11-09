@@ -157,20 +157,20 @@ public static class LinearSystemComparer
             verboseStream.WriteLine();
 
             
-            verboseStream.WriteLine("b= " + VectorAlgebra.PrintVector(b1));
+            verboseStream.WriteLine("b= " + VectorAlgebra.ToString(b1));
             verboseStream.WriteLine();
 
             if (includeCramers)
             {
                 fileStream.WriteLine(string.Format(@"Size: {0} ", i));
                 fileStream.WriteLine("Exact");
-                fileStream.WriteLine(VectorAlgebra.PrintVector(exact));
+                fileStream.WriteLine(VectorAlgebra.ToString(exact));
                 fileStream.WriteLine(string.Format(@"Elapsed: {0}", exactTime));
                 fileStream.WriteLine();
             }
 
             fileStream.WriteLine("Approximate");
-            fileStream.WriteLine(VectorAlgebra.PrintVector(approx));
+            fileStream.WriteLine(VectorAlgebra.ToString(approx));
             fileStream.WriteLine(string.Format(@"Elapsed: {0}", sw.Elapsed));
             fileStream.WriteLine();
 

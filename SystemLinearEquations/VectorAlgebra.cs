@@ -165,8 +165,7 @@ public static class VectorAlgebra
     }
 
     // Returns vector "<v0,v1,v2,...,vn>"
-    // Also prints to console if flag is set to true
-    public static string PrintVector(double[] vector, bool console = false)
+    public static string ToString(double[] vector)
     {
         if (vector == null || vector.Length == 0)
         {
@@ -178,21 +177,18 @@ public static class VectorAlgebra
         var sb = new StringBuilder();
         sb.Append('<');
         for (int i = 0; i < length - 1; i++)
-        {                
+        {
             sb.Append(vector[i].ToString());
             sb.Append(',');
         }
 
-        // am doing this outside of the for loop to avoid checking 
-        // for this case since its always last
         sb.Append(vector[length - 1].ToString());
         sb.Append('>');
 
-        if (console)
-            Console.WriteLine(sb);
-
         return sb.ToString();
     }
+
+    
 
     public static double[] Round(double[] vector, int? precision = null)
     {

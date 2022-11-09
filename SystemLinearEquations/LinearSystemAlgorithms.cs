@@ -284,13 +284,22 @@ public static class LinearSystemAlgorithms
     // adapted from Habgood & Arel (2011)
     public static double[] ChiosExtendedCondensationMethod(Matrix A, double[] b)
     {
-        // For now only handle square matricies
-        if (!A.IsSquare || A.Dimensions.Row != b.Length)
+        //For now only handle square matricies
+        if (!A.IsSquare)
         {
-            throw new ArgumentException("Not square, or # rows in A doesn't equal length of b");
+            throw new ArgumentException("Matrix A must be a square");
         }
 
-// these inputs might not be right
+        if (A.Dimensions.Row != b.Length)
+        {
+            throw new ArgumentException("Number of rows in A doesn't equal length of b");
+        }
+
+        //
+
+
+
+        // these inputs might not be right
         return ChiosExtendedCondensationMethodHelper(A, b, b.Length, b.Length);
     }
 
@@ -310,21 +319,18 @@ public static class LinearSystemAlgorithms
         // Condensation step size
         int m = 2;
 
-        // current matrix's size
-        int n = currentSize;            // unnecesary assignment?
-
         // reusable matrix must be the same size as input A
         // as it contains all minor dets for every position in A
-        double[][] reusableminor = new double[n][];
-        for (int i = 0; i < n; i++)
+        double[][] reusableminor = new double[currentSize][];
+        for (int i = 0; i < currentSize; i++)
         {
-            reusableminor[i] = new double[n];
+            reusableminor[i] = new double[currentSize];
         }
 
         // unknowns for this matrix to solve for
-        int mirrorsize = n;
+        int mirrorsize = currentSize;
 
-        while ((n - m) > mirrorsize)
+        while ((currentSize - m) > mirrorsize)
         {
             var leadDeterminant = A.CalculateMinor(m + 1, m + 1);
             var leadMinor = new double[m];
@@ -333,7 +339,7 @@ public static class LinearSystemAlgorithms
                 throw new Exception("Can't divide by zero =(");
 
             // divide lead column by minor of at A(1,1)
-            for (int i = 0; i < n - 1; i++)
+            for (int i = 0; i < currentSize - 1; i++)
             {
                 A.matrix[i][1] = A.matrix[i][1] / leadDeterminant;
             }
@@ -348,7 +354,7 @@ public static class LinearSystemAlgorithms
                 }
             }
 
-            for (int row = m + 1; row <= n + 1; row++)
+            for (int row = m + 1; row <= currentSize + 1; row++)
             {
                 // find the lead minors for this row
                 for (int i = 1; i <= m; i++)
@@ -365,7 +371,7 @@ public static class LinearSystemAlgorithms
                 }
 
                 // Core Loop: find the m x m determinant for each elmement in a
-                for (int col = m + 1; col <= n + 1; col++)
+                for (int col = m + 1; col <= currentSize + 1; col++)
                 {
                     for (int i = 0; i <= m; i++)
                     {
@@ -379,10 +385,10 @@ public static class LinearSystemAlgorithms
             }
 
             // reduce matrix size by condensation step size
-            n -= m;
+            currentSize -= m;
         }
         // End condensation, solve matrix
-        if (n == 6)
+        if (currentSize == 6)
         {
             // solve for the subset of unknowns assigned
             // x[] = cramersrule[b]
@@ -399,7 +405,7 @@ public static class LinearSystemAlgorithms
         // Continue condensation steps
         else
         {
-            var mirrorA = Matrix.Mirror(A);
+            var mirrorA = A.Mirror();
 
             ChiosExtendedCondensationMethodHelper(A, b, currentSize / 2, 1);
 

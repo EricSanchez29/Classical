@@ -426,7 +426,7 @@ public class Matrix : MatrixBase
         //
 
 
-        // why?
+        // why? (because
         if (getSign(row, column))
             determinant *= 1;
         else
@@ -515,12 +515,6 @@ public class Matrix : MatrixBase
                     mult = mult * getMinorDetHelper(calculations, allowedColumns, allowedRows);
 
 
-                    // even/even = even
-                    // odd/even = odd
-                    // odd/odd = odd
-                    //
-
-                    // this is wrong depends on number being excluded
                     if (getSign(removeRow, removeColumn))
                         determinant += mult;
                     else
@@ -624,13 +618,13 @@ public class Matrix : MatrixBase
     // (revisit this later)
     //
     // should this return a simple 2d double array?
-    public static Matrix Mirror(Matrix matrix)
+    public Matrix Mirror()
     {
-        int rowLength = matrix.Dimensions.Row;
+        int rowLength = Dimensions.Row;
 
-        var result = new double[matrix.Dimensions.Row][];
+        var result = new double[Dimensions.Row][];
 
-        int columnLength = matrix.Dimensions.Column;
+        int columnLength = Dimensions.Column;
 
         for (int i = 0; i < rowLength; i++)
         {
@@ -668,7 +662,7 @@ public class Matrix : MatrixBase
 
             for (sourceColumn = 0; sourceColumn < midPoint; sourceColumn++)
             {
-                result[i][destColumn] = -matrix.matrix[i][sourceColumn];
+                result[i][destColumn] = -matrix[i][sourceColumn];
 
                 destColumn--;
             }
@@ -676,14 +670,14 @@ public class Matrix : MatrixBase
             if (skipColumn)
             {
                 // don't swap just copy
-                result[i][destColumn] = matrix.matrix[i][sourceColumn];
+                result[i][destColumn] = matrix[i][sourceColumn];
                 destColumn--;
                 sourceColumn++;
             }
 
             for (int k = sourceColumn; k < columnLength; k++)
             {
-                result[i][destColumn] = matrix.matrix[i][k];
+                result[i][destColumn] = matrix[i][k];
                 destColumn--;
             }
         }

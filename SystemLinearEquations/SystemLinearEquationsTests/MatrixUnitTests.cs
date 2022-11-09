@@ -186,32 +186,32 @@ public static class MatrixUnitTests
     [Fact]
     public static void TestCalculateMinor()
     {
-       // /// 3x3
-       // // Arrange
-       //var testMatrix3 = new Matrix(3, 3);
-       // testMatrix3.matrix[0] = new double[] { 1, 2, 3 };
-       // testMatrix3.matrix[1] = new double[] { 2, 4, 5 };
-       // testMatrix3.matrix[2] = new double[] { 3, 8, 9 };
+        /// 3x3
+        // Arrange
+        var testMatrix3 = new Matrix(3, 3);
+        testMatrix3.matrix[0] = new double[] { 1, 2, 3 };
+        testMatrix3.matrix[1] = new double[] { 2, 4, 5 };
+        testMatrix3.matrix[2] = new double[] { 3, 8, 9 };
 
-       // var expected3 = new Matrix(2, 2);
-       // expected3.matrix[0] = new double[] { 1, 2 };
-       // expected3.matrix[1] = new double[] { 2, 4 };
+        var expected3 = new Matrix(2, 2);
+        expected3.matrix[0] = new double[] { 1, 2 };
+        expected3.matrix[1] = new double[] { 2, 4 };
 
-       // // Act
-       // var result3 = testMatrix3.CalculateMinorDeterminant(3, 3);
+        // Act
+        var result3 = testMatrix3.CalculateMinor(3, 3);
 
-       // // Assert
-       // Assert.Equal(expected3.GetDeterminant(), result3);
+        // Assert
+        Assert.Equal(expected3.GetDeterminant(), result3);
 
-       // // Arrange
-       // expected3.matrix[0] = new double[] { 2, 3 };
-       // expected3.matrix[1] = new double[] { 4, 5 };
+        // Arrange
+        expected3.matrix[0] = new double[] { 2, 3 };
+        expected3.matrix[1] = new double[] { 4, 5 };
 
-       // // Act
-       // result3 = testMatrix3.CalculateMinorDeterminant(3, 1);
+        // Act
+        result3 = testMatrix3.CalculateMinor(3, 1);
 
-       // // Assert
-       // Assert.Equal(expected3.GetDeterminant(), result3);
+        // Assert
+        Assert.Equal(expected3.GetDeterminant(), result3);
 
         /// 4x4
         // Arrange
@@ -268,6 +268,17 @@ public static class MatrixUnitTests
 
         // Assert
         Assert.Equal(expected4.GetDeterminant(), result4);
+
+        expected4 = new Matrix(3, 3);
+        expected4.matrix[0] = new double[] { 1, 2, 4 };
+        expected4.matrix[1] = new double[] { 2, 4, 7 };
+        expected4.matrix[2] = new double[] { 4, 8, 1 };
+
+        // Act
+        result4 = testMatrix4.CalculateMinor(3, 3);
+
+        // Assert
+        Assert.Equal(expected4.GetDeterminant(), result4);
     }
 
     [Fact]
@@ -285,7 +296,7 @@ public static class MatrixUnitTests
         expected3.matrix[2] = new double[] { 2, 9, -1 };
 
         // Act
-        var result3 = Matrix.Mirror(test3);
+        var result3 = test3.Mirror();
 
         // Assert
         Assert.Equal(expected3, result3);
@@ -304,7 +315,7 @@ public static class MatrixUnitTests
         expected4.matrix[3] = new double[] { 1, 9, -8, -5 };
 
         // Act
-        var result4 = Matrix.Mirror(testMatrix4);
+        var result4 = testMatrix4.Mirror();
 
         // Assert
         Assert.Equal(expected4, result4);
@@ -388,7 +399,7 @@ public static class MatrixUnitTests
         var result2 = Matrix.Multiply(leftMatrix1, rightMatrix1);
 
         // Assert
-        Assert.Equal((1, 2), result2.Dimensions);
+        Assert.Equal((1, 2), result2?.Dimensions);
 
         Assert.Equal(matrix, result2);
 
