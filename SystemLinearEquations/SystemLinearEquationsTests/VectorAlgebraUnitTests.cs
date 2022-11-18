@@ -48,17 +48,10 @@ public class VectorAlgebraUnitTests
         Assert.Equal(expected3, VectorAlgebra.Multiply(c, a));
     }
 
+
     [Fact]
-    public static void AssortedTests()
+    public static void RandomVectorTest()
     {
-        // Arrange
-        var a = new double[] {1, 1, 1};
-        var expected1 = "<1,1,1>";
-        
-        // Act & Assert
-        Assert.Equal(expected1, VectorAlgebra.ToString(a));
-
-
         // Arrange
         var b = VectorAlgebra.GetRandomVector(3);
         var c = VectorAlgebra.GetRandomVector(3);
@@ -67,7 +60,23 @@ public class VectorAlgebraUnitTests
         // Testing that random vectors are different
         Assert.NotEqual(c, b);
 
+    }
 
+    [Fact]
+    public static void ToStringTest()
+    {
+        // Arrange
+        var a = new double[] { 1, 1, 1 };
+        var expected1 = "<1,1,1>";
+
+        // Act & Assert
+        Assert.Equal(expected1, VectorAlgebra.ToString(a));
+    }
+
+
+    [Fact]
+    public static void PercentDiffLengthTest()
+    {
         // Arrange
         var d = new double[] {1, 1, 1, 1}; // length = 2
         var e = new double[] {2, 2, 2, 2}; // length = 4

@@ -1,10 +1,44 @@
-using System.Diagnostics;
+using SystemLinearEquations.LinearSystemAlgorithms;
 using Maths.LinearAlgebra;
+using System.Diagnostics;
 
 namespace Maths;
 
-public static class LinearSystemComparer
+public class LinearSystemComparer
 {
+    public LinearSystemComparer(int startSize, int endSize)
+    {
+        IList<(Matrix, double[])>  _systems = new List<(Matrix, double[])>();
+
+        generateSystems(startSize, endSize, _systems);
+
+        List<ILinearSystemMethod> solvers = new List<ILinearSystemMethod>();
+
+        foreach(var system in _systems)
+        {
+            foreach (var sol in solvers)
+            {
+                Console.WriteLine(VectorAlgebra.ToString(sol.Solve(system.Item1, system.Item2)));
+            }
+        }
+    }
+
+    
+
+
+    private void generateSystems(int startSize, int endSize, IList<(Matrix m, double[] b)> sys)
+    {
+        // consider using previous matrix as basis for next matrix
+
+        // for now all matricies are independent
+
+        for (int i = startSize; i < endSize; i++)
+        {
+            sys.Add(new(Matrix.GetRandomSquareMatrix(i), VectorAlgebra.GetRandomVector(i)));
+        }
+    }
+
+
     // Used to compare the exact vs approximate solutions of Hermitian linear systems (n x n)
     public static void HermitianSystem()
     {
@@ -23,7 +57,7 @@ public static class LinearSystemComparer
         // Ax = b
         // where A is a real square matrix
         // and b is any real vector (n dimensions)
-
+        
         compareMethods(1, 23, false);
     }
 
@@ -107,7 +141,7 @@ public static class LinearSystemComparer
             if (includeCramers)
             {
                 sw.Start();
-                exact = LinearSystemAlgorithms.CramersRuleModified(m1, b1);
+                exact = CramersMethodModified.Solve(m1, b1);
                 sw.Stop();
                 exactTime = sw.Elapsed;
                 Console.WriteLine("Approx: " + exactTime);

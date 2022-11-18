@@ -9,10 +9,10 @@ class Program
 {
     static void Main()
     {
-        LinearSystemComparer.NonHermitianSystem();
-        LinearSystemComparer.HermitianSystem();
-        LinearSystemComparer.NonHermitianSystem_ApproxOnly();
-        LinearSystemComparer.HermitianSystem_ApproxOnly();
+        //LinearSystemComparer.NonHermitianSystem();
+        //LinearSystemComparer.HermitianSystem();
+        //LinearSystemComparer.NonHermitianSystem_ApproxOnly();
+        //LinearSystemComparer.HermitianSystem_ApproxOnly();
     }
 }
 
