@@ -2,12 +2,14 @@
 
 namespace SystemLinearEquations.LinearSystemAlgorithms
 {
+    //
+    // WIP, Don't use right now
+    //
     public class ChiosCondensationMethod : ILinearSystemMethod
     {
-
         /// Chios Extended Condensation Method
         /// (Depends on Cramer's Rule Modified)
-        #region
+        
         // adapted from Habgood & Arel (2011)
         public static double[] ChiosExtendedCondensationMethod(Matrix A, double[] b)
         {
