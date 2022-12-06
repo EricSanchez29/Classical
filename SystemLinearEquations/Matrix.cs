@@ -397,7 +397,6 @@ public class Matrix : MatrixBase
         var allowedRows = new List<int>(Dimensions.Row - 1);
         for (int c = 1; c <= Dimensions.Row; c++)
         {
-            // don't include this column
             if (c == row)
                 continue;
 
@@ -426,7 +425,7 @@ public class Matrix : MatrixBase
         //
 
 
-        // why? (because
+        // why?...
         if (getSign(row, column))
             determinant *= 1;
         else
@@ -436,7 +435,7 @@ public class Matrix : MatrixBase
     }
 
     // + true
-    // - odd
+    // - false
     private static bool getSign(int row, int column)
     {
         if ((isEven(row) && isEven(column)) || (!isEven(row)) && (!isEven(column)))
@@ -686,15 +685,15 @@ public class Matrix : MatrixBase
     }
 
     // add test?
-    public static Matrix GetRandomHermitianMatrix(int n)
+    public static Matrix GetRandomHermitianMatrix(int matrixSize)
     {
-        var result = new Matrix(n, n);
+        var result = new Matrix(matrixSize, matrixSize);
 
         var rand = new Random();
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < matrixSize; i++)
         {
-            for (int j = i; j < n; j++)
+            for (int j = i; j < matrixSize; j++)
             {
                 var random = rand.NextDouble();
                 result.matrix[i][j] = random;
@@ -715,19 +714,21 @@ public class Matrix : MatrixBase
     // Need to test !
     //
     // Returns an (n x n) Matrix 
-    public static Matrix GetRandomSquareMatrix(int n)
+    public static Matrix GetRandomSquareMatrix(int matrixSize)
     {
-        var result = new Matrix(n, n);
+        var result = new Matrix(matrixSize, matrixSize);
 
         var rand = new Random();
 
         int loops = 0;
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < matrixSize; i++)
         {
-            for (int j = 0; j < n; j++)
+            for (int j = 0; j < matrixSize; j++)
             {
                 loops++;
+                // 0 <= NextDouble < 1.0
+                // should I multiply with rand.NextInt64(long maxValue = 10? or 100?)
                 result.matrix[i][j] = rand.NextDouble();
             }
         }
@@ -797,6 +798,11 @@ public class Matrix : MatrixBase
         }
 
         return newMatrix;
+    }
+
+    public double[] Multiply(double[] vector)
+    {
+        return Multiply(this, vector);
     }
 
     public static double[] Multiply(Matrix leftOperand, double[] rightOperand, bool swapOperands = false)
