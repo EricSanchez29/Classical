@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Maths.LinearAlgebra;
 
-public static class VectorAlgebra
+public static class Vector
 {
     // Use the product of a vector with itself, to get vector length^2
     // Sqrt(a * a) = lenght of a
@@ -205,5 +205,27 @@ public static class VectorAlgebra
         }
 
         return vector;
+    }
+
+    public static bool Equal(double[] vector1, double[] vector2, int precision)
+    {
+        if (vector1 is null|| vector2 is null || vector1.Length != vector2.Length)
+        {
+            throw new ArgumentException();
+        }
+
+        for (int i = 0; i < vector1.Length; i++)
+        {
+            // round both values
+            double value1 = Math.Round(vector1[i], precision);
+            double value2 = Math.Round(vector2[i], precision);
+
+            if (!double.Equals(value1, value2))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
