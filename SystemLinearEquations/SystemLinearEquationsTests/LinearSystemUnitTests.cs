@@ -32,8 +32,11 @@ public static class LinearSystemAlgorithmsUnitTests
         // Act
         var result2 = solver.Solve(m1, b2);
 
+        
+
         // Assert
-        Assert.Equal(expectedResult2, result2);
+        Assert.True(Vector.Equal(expectedResult2, result2, 12));
+
 
         /// 4x4
         // Arrange
@@ -45,13 +48,13 @@ public static class LinearSystemAlgorithmsUnitTests
         var b4 = new double[4] { 1, 2, 3, 4 };
 
         // from wolfram alpha
-        var expectedResult3 = VectorAlgebra.Round(new double[4] { 247.0 / 178.0, -509.0 / 178.0, 162.0 / 89.0, -14.0 / 89.0 }, 15);
+        var expectedResult3 = Vector.Round(new double[4] { 247.0 / 178.0, -509.0 / 178.0, 162.0 / 89.0, -14.0 / 89.0 }, 15);
 
         // Act
         var result4 = solver.Solve(m4, b4);
 
         // Assert
-        Assert.Equal(expectedResult3, result4);
+        Assert.True(Vector.Equal(expectedResult3, result4, 12));
     }
 
 
@@ -61,17 +64,17 @@ public static class LinearSystemAlgorithmsUnitTests
         GeneralLinearSystemTest(new CramersMethodModified());
     }
 
-    [Fact]
-    public static void TestCramersRule_Chios()
-    {
-        GeneralLinearSystemTest(new ChiosCondensationMethod());
-    }
-
     //[Fact]
-    //public static void TestConjugateMethod()
+    //public static void TestCramersRule_Chios()
     //{
-    //    GeneralLinearSystemTest(new ConjugateTransposeMethods())
+    //    GeneralLinearSystemTest(new ChiosCondensationMethod());
     //}
+
+    [Fact]
+    public static void TestConjugateMethod()
+    {
+        GeneralLinearSystemTest(new ConjugateTransposeMethods());
+    }
 
     //[Fact]
     //public static void TestBiConjugateMethod()
@@ -158,7 +161,7 @@ public static class LinearSystemAlgorithmsUnitTests
 
     //    // Act
     //    result = LinearSystemAlgorithms.ConjugateTransposeMethod(m1, b2, est1);
- 
+
     //    lengthDiff = VectorAlgebra.PercentDiffLength(expectedResult2, result);
 
 

@@ -8,26 +8,26 @@ public class VectorAlgebraUnitTests
     {
         var a = new double[] {1, 2, 3};
         var b = new double[] {2, 2, 2};
-        var result1 = VectorAlgebra.DotProduct(a, b);
+        var result1 = Vector.DotProduct(a, b);
         var expected1 = 12;
         Assert.Equal(expected1, result1);
 
         // confirm commutativity
-        var result2 = VectorAlgebra.DotProduct(b, a);
+        var result2 = Vector.DotProduct(b, a);
         Assert.Equal(expected1, result2);
             
-        var result3 = VectorAlgebra.CrossProduct(a, b);
+        var result3 = Vector.CrossProduct(a, b);
         var expected3 = new double[] {-2, 4, -2};
         Assert.Equal(expected3, result3);
 
         // confirm non commutativity
-        var result4 = VectorAlgebra.CrossProduct(b, a);
+        var result4 = Vector.CrossProduct(b, a);
         var expected4 = new double[] {2, -4, 2};
         Assert.Equal(expected4, result4);
 
         // Angle between two vectors
         var expected5 = 0.3876; // radians
-        Assert.Equal(expected5, Math.Round(VectorAlgebra.GetAngle(a, b), 4));
+        Assert.Equal(expected5, Math.Round(Vector.GetAngle(a, b), 4));
     }
 
     [Fact]
@@ -43,9 +43,9 @@ public class VectorAlgebraUnitTests
         var expected3 = new double[] {3, 6, 9};
 
         // Act & Assert
-        Assert.Equal(expected1, VectorAlgebra.Add(a, b));
-        Assert.Equal(expected2, VectorAlgebra.Subtract(a, b));
-        Assert.Equal(expected3, VectorAlgebra.Multiply(c, a));
+        Assert.Equal(expected1, Vector.Add(a, b));
+        Assert.Equal(expected2, Vector.Subtract(a, b));
+        Assert.Equal(expected3, Vector.Multiply(c, a));
     }
 
 
@@ -53,8 +53,8 @@ public class VectorAlgebraUnitTests
     public static void RandomVectorTest()
     {
         // Arrange
-        var b = VectorAlgebra.GetRandomVector(3);
-        var c = VectorAlgebra.GetRandomVector(3);
+        var b = Vector.GetRandomVector(3);
+        var c = Vector.GetRandomVector(3);
 
         // Act & Assert
         // Testing that random vectors are different
@@ -70,7 +70,7 @@ public class VectorAlgebraUnitTests
         var expected1 = "<1,1,1>";
 
         // Act & Assert
-        Assert.Equal(expected1, VectorAlgebra.ToString(a));
+        Assert.Equal(expected1, Vector.ToString(a));
     }
 
 
@@ -83,7 +83,7 @@ public class VectorAlgebraUnitTests
         var expected2 = 100.0;
 
         // Act
-        var x = VectorAlgebra.PercentDiffLength(e, d);
+        var x = Vector.PercentDiffLength(e, d);
 
         // Asser
         Assert.Equal(expected2, x);

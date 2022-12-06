@@ -51,12 +51,12 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
         {
             // residual vector r0
             // r0 = b - Ax0
-            var r = VectorAlgebra.Subtract(b, Matrix.Multiply(A, x));
+            var r = Vector.Subtract(b, Matrix.Multiply(A, x));
 
             // if intial guess is close enough, return
             if (isSuffcientlySmall(r))
             {
-                return VectorAlgebra.Round(x);
+                return Vector.Round(x);
             }
 
             // search direction vector p0 = r0
@@ -69,42 +69,42 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
             {
                 // scalar a0
                 // a0 = (r0 * r0) / (x0 * A * p0)
-                var a_denominator = VectorAlgebra.DotProduct(p, Matrix.Multiply(A, p));
+                var a_denominator = Vector.DotProduct(p, Matrix.Multiply(A, p));
                 if (a_denominator == 0.0)
                 {
                     // bad x0 guess?
                     return new double[0];
                 }
 
-                var a = VectorAlgebra.DotProduct(r, r) / a_denominator;
+                var a = Vector.DotProduct(r, r) / a_denominator;
 
                 // compute xk
                 // xk = x_k-1 + a_k * p_k-1
-                x = VectorAlgebra.Add(x, VectorAlgebra.Multiply(a, p));
+                x = Vector.Add(x, Vector.Multiply(a, p));
 
                 // compute residual vector r1
                 // r_next = r - aAp
-                var r_next = VectorAlgebra.Subtract(r, VectorAlgebra.Multiply(a, Matrix.Multiply(A, p)));
+                var r_next = Vector.Subtract(r, Vector.Multiply(a, Matrix.Multiply(A, p)));
                 if (isSuffcientlySmall(r_next))
                 {
                     Console.WriteLine(@"Iterations: {0}", k);
-                    return VectorAlgebra.Round(x);
+                    return Vector.Round(x);
                 }
 
                 // compute scalar bk
                 // beta = r1 * r1 / r0 * r0
-                var beta = VectorAlgebra.DotProduct(r_next, r_next) / VectorAlgebra.DotProduct(r, r);
+                var beta = Vector.DotProduct(r_next, r_next) / Vector.DotProduct(r, r);
 
                 // compute direction vector p1
                 // p1 = r1 + beta*p0
-                p = VectorAlgebra.Add(r_next, VectorAlgebra.Multiply(beta, p));
+                p = Vector.Add(r_next, Vector.Multiply(beta, p));
 
                 r = r_next;
             }
 
             Console.WriteLine("Broke out of loop =(");
 
-            return VectorAlgebra.Round(x);
+            return Vector.Round(x);
         }
 
         // Used to help determine when I have a viable solution
@@ -112,7 +112,7 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
         public static bool isSuffcientlySmall(double[] vector)
         {
             // ||v|| = v * v < error than can be considered a zero vector
-            if (VectorAlgebra.DotProduct(vector, vector) < 0.0001)
+            if (Vector.DotProduct(vector, vector) < 0.0001)
             {
                 return true;
             }
@@ -126,18 +126,18 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
         {
             // residual vector r0
             // r0 = b - Ax0
-            var r = VectorAlgebra.Subtract(b, Matrix.Multiply(A, x));
-            var _r = VectorAlgebra.Subtract(Matrix.Multiply(A, _x), b);
+            var r = Vector.Subtract(b, Matrix.Multiply(A, x));
+            var _r = Vector.Subtract(Matrix.Multiply(A, _x), b);
 
             // if intial guess is close enough, return
             if (isSuffcientlySmall(r))
             {
-                return VectorAlgebra.Round(x);
+                return Vector.Round(x);
             }
 
             if (isSuffcientlySmall(_r))
             {
-                return VectorAlgebra.Round(_x);
+                return Vector.Round(_x);
             }
 
             // search direction vector p0 = r0
@@ -151,44 +151,44 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
             {
                 // scalar ak
                 // ak = (_rk * rk) / (_pk * A * pk)
-                var a_denominator = VectorAlgebra.DotProduct(_p, Matrix.Multiply(A, p));
+                var a_denominator = Vector.DotProduct(_p, Matrix.Multiply(A, p));
                 if (a_denominator == 0.0)
                 {
                     // bad x0 guess?
                     return Array.Empty<double>();
                 }
 
-                var a = VectorAlgebra.DotProduct(_r, r) / a_denominator;
+                var a = Vector.DotProduct(_r, r) / a_denominator;
 
                 // compute x1
                 // x1 = x0 + a0p0
-                x = VectorAlgebra.Add(x, VectorAlgebra.Multiply(a, p));
-                _x = VectorAlgebra.Add(_x, VectorAlgebra.Multiply(a, _p));
+                x = Vector.Add(x, Vector.Multiply(a, p));
+                _x = Vector.Add(_x, Vector.Multiply(a, _p));
 
                 // compute residual vector r1
                 // r_next = r - aAp
-                var r_next = VectorAlgebra.Subtract(r, VectorAlgebra.Multiply(a, Matrix.Multiply(A, p)));
+                var r_next = Vector.Subtract(r, Vector.Multiply(a, Matrix.Multiply(A, p)));
                 if (isSuffcientlySmall(r_next))
                 {
                     Console.WriteLine(@"Iterations: {0}", k);
-                    return VectorAlgebra.Round(x);
+                    return Vector.Round(x);
                 }
 
-                var _r_next = VectorAlgebra.Subtract(_r, VectorAlgebra.Multiply(a, Matrix.Multiply(A, _p, true)));
+                var _r_next = Vector.Subtract(_r, Vector.Multiply(a, Matrix.Multiply(A, _p, true)));
                 if (isSuffcientlySmall(_r_next))
                 {
                     Console.WriteLine(@"Iterations: {0}", k);
-                    return VectorAlgebra.Round(_x);
+                    return Vector.Round(_x);
                 }
 
                 // compute scalar beta
                 // beta = _rk+1 * rk+1 / _rk * rk
-                var beta = VectorAlgebra.DotProduct(_r_next, r_next) / VectorAlgebra.DotProduct(_r, r);
+                var beta = Vector.DotProduct(_r_next, r_next) / Vector.DotProduct(_r, r);
 
                 // compute direction vector p1
                 // pk = rk + beta*pk
-                p = VectorAlgebra.Add(r_next, VectorAlgebra.Multiply(beta, p));
-                _p = VectorAlgebra.Add(_r_next, VectorAlgebra.Multiply(beta, _p));
+                p = Vector.Add(r_next, Vector.Multiply(beta, p));
+                _p = Vector.Add(_r_next, Vector.Multiply(beta, _p));
 
                 r = r_next;
                 _r = _r_next;
@@ -197,12 +197,12 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
             Console.WriteLine("Broke out of loop =(");
 
             // default case if I break out of the loop without a proper solution
-            return VectorAlgebra.Round(x);
+            return Vector.Round(x);
         }
 
         public double[] Solve(Matrix A, double[] b)
         {
-            throw new NotImplementedException();
+            return ConjugateTransposeMethod(A, b);
         }
     }
 }

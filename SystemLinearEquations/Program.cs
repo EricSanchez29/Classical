@@ -10,10 +10,12 @@ class Program
     static void Main()
     {
         // run general solver here
+
     }
 }
 
 public class Global
 {
+    // Number of digits used in Math.Round(double,int)
     public static readonly int Precision = 15;
 }
