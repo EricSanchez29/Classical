@@ -4,41 +4,42 @@ using System.Diagnostics;
 
 namespace Maths;
 
-public class LinearSystemComparer
-{
-    public LinearSystemComparer(int startSize, int endSize)
-    {
-        // expose analysis data through functions or properties
+// should this type of functionality exist in the test solution?
+//public class LinearSystemComparer
+//{
+//    public LinearSystemComparer(int startSize, int endSize)
+//    {
+//        // expose analysis data through functions or properties
 
-        IList<(Matrix, double[])>  _systems = new List<(Matrix, double[])>();
+//        IList<(Matrix, double[])>  _systems = new List<(Matrix, double[])>();
 
-        generateSystems(startSize, endSize, _systems);
+//        generateSystems(startSize, endSize, _systems);
 
-        List<ILinearSystemMethod> solvers = new List<ILinearSystemMethod>();
+//        List<ILinearSystemMethod> solvers = new List<ILinearSystemMethod>();
 
-        foreach(var system in _systems)
-        {
-            foreach (var sol in solvers)
-            {
-                Console.WriteLine(VectorAlgebra.ToString(sol.Solve(system.Item1, system.Item2)));
-            }
-        }
-    }
-
-
+//        foreach(var system in _systems)
+//        {
+//            foreach (var sol in solvers)
+//            {
+//                Console.WriteLine(Vector.ToString(sol.Solve(system.Item1, system.Item2)));
+//            }
+//        }
+//    }
 
 
-    private void generateSystems(int startSize, int endSize, IList<(Matrix m, double[] b)> sys)
-    {
-        // consider using previous matrix as basis for next matrix
 
-        // for now all matricies are independent
 
-        for (int i = startSize; i < endSize; i++)
-        {
-            sys.Add(new(Matrix.GetRandomSquareMatrix(i), VectorAlgebra.GetRandomVector(i)));
-        }
-    }
+//    private void generateSystems(int startSize, int endSize, IList<(Matrix m, double[] b)> sys)
+//    {
+//        // consider using previous matrix as basis for next matrix
+
+//        // for now all matricies are independent
+
+//        for (int i = startSize; i < endSize; i++)
+//        {
+//            sys.Add(new(Matrix.GetRandomSquareMatrix(i), Vector.GetRandomVector(i)));
+//        }
+//    }
 
 
     //// Used to compare the exact vs approximate solutions of Hermitian linear systems (n x n)
