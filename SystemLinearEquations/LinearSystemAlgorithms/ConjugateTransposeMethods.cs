@@ -16,7 +16,7 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
                 throw new ArgumentException();
             }
 
-            // Two initial guesses for x
+            // initial guesses for x = <0,0,0>
             x ??= new double[b.Length];
 
             // Picking the correct algorithnm to approximate the solution,
@@ -29,6 +29,7 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
 
             if (!A.Equals(conjugateTranpose))
             {
+                // 2nd guess x = <1,1,1>
                 _x ??= new double[b.Length];
                 for (int i = 0; i < b.Length; i++)
                     _x[i] = 1;

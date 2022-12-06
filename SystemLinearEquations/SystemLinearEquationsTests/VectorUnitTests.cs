@@ -1,7 +1,7 @@
 using Maths.LinearAlgebra;
 
 namespace MathTests.LinearAlgebra;
-public class VectorAlgebraUnitTests
+public class VectorUnitTests
 {
     [Fact]
     public static void VectorOperatorsTests()

@@ -684,7 +684,6 @@ public class Matrix : MatrixBase
         return new Matrix(result);
     }
 
-    // add test?
     public static Matrix GetRandomHermitianMatrix(int matrixSize)
     {
         var result = new Matrix(matrixSize, matrixSize);
@@ -711,8 +710,6 @@ public class Matrix : MatrixBase
         return result;
     }
 
-    // Need to test !
-    //
     // Returns an (n x n) Matrix 
     public static Matrix GetRandomSquareMatrix(int matrixSize)
     {
@@ -720,13 +717,10 @@ public class Matrix : MatrixBase
 
         var rand = new Random();
 
-        int loops = 0;
-
         for (int i = 0; i < matrixSize; i++)
         {
             for (int j = 0; j < matrixSize; j++)
             {
-                loops++;
                 // 0 <= NextDouble < 1.0
                 // should I multiply with rand.NextInt64(long maxValue = 10? or 100?)
                 result.matrix[i][j] = rand.NextDouble();

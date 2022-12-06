@@ -510,4 +510,21 @@ public static class MatrixUnitTests
         // Assert
         Assert.Equal(expected, testM2);
     }
+
+    [Fact]
+    public static void TestGetRandomHermitianMatrix()
+    {
+        var rando = Matrix.GetRandomHermitianMatrix(5);
+
+        // H = H ^ t
+        Assert.True(rando.Transpose().Equals(rando));
+    }
+
+    [Fact]
+    public static void TestGetRandomSquareMatrix()
+    {
+        var rando = Matrix.GetRandomSquareMatrix(5);
+
+        Assert.True(rando.IsSquare);
+    }
 }
