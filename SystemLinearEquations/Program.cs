@@ -9,14 +9,13 @@ class Program
 {
     static void Main()
     {
-        LinearSystemComparer.NonHermitianSystem();
-        LinearSystemComparer.HermitianSystem();
-        LinearSystemComparer.NonHermitianSystem_ApproxOnly();
-        LinearSystemComparer.HermitianSystem_ApproxOnly();
+        // run general solver here
+
     }
 }
 
 public class Global
 {
+    // Number of digits used in Math.Round(double,int)
     public static readonly int Precision = 15;
 }

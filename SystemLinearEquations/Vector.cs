@@ -1,15 +1,14 @@
-using System;
 using System.Text;
 
 namespace Maths.LinearAlgebra;
 
-public static class VectorAlgebra
+public static class Vector
 {
     // Use the product of a vector with itself, to get vector length^2
     // Sqrt(a * a) = lenght of a
     //
     // Commutative
-    public static double DotProduct(double[] leftVector, double[] rightVector = null)
+    public static double DotProduct(double[] leftVector, double[] rightVector)
     {
         if (rightVector == null)
             rightVector = leftVector;
@@ -25,6 +24,19 @@ public static class VectorAlgebra
 
         return result;
     }
+
+    public static double GetVectorLength(double[] vector)
+    {
+        double answer = 0;
+
+        for (int i = 0; i < vector.Length; i++)
+        {
+            answer += vector[i] * vector[i];
+        }
+
+        return Math.Sqrt(answer);
+    }
+
 
     // a * b = |a||b|cos(theta)
     //
@@ -48,7 +60,7 @@ public static class VectorAlgebra
     public static double[] CrossProduct(double[] leftVector, double[] rightVector)
     {
         if (leftVector == null || rightVector == null || leftVector.Length != rightVector.Length)
-            return null;
+            return Array.Empty<double>();
 
         var result = new double[leftVector.Length];
 
@@ -67,7 +79,7 @@ public static class VectorAlgebra
     {
         if (leftVector == null || rightVector == null || leftVector.Length != rightVector.Length)
         {
-            return null;
+            return Array.Empty<double>();
         }
 
         var result = new double[leftVector.Length];
@@ -85,7 +97,7 @@ public static class VectorAlgebra
     {
         if (leftVector == null || rightVector == null || leftVector.Length != rightVector.Length)
         {
-            return null;
+            return Array.Empty<double>();
         }
 
         var result = new double[leftVector.Length];
@@ -116,10 +128,8 @@ public static class VectorAlgebra
         if (testVector == null || refVector == null || testVector.Length != refVector.Length)
             return double.MaxValue;
 
-        var result = 0.0;
-
-        var testLength = Math.Sqrt(DotProduct(testVector));
-        var refLength = Math.Sqrt(DotProduct(refVector));
+        var testLength = GetVectorLength(testVector);
+        var refLength = GetVectorLength(refVector);
 
         // if reference vector length is 0,
         // percent diff is undefined
@@ -128,7 +138,7 @@ public static class VectorAlgebra
             return double.NaN;
         }
 
-        result = (testLength - refLength) / refLength;
+        double result = (testLength - refLength) / refLength;
 
         return result * 100;
     }
@@ -139,17 +149,14 @@ public static class VectorAlgebra
 
         var rand = new Random();
 
-        if (integer)
+        for (int i = 0; i < length; i++)
         {
-            for (int i = 0; i < length; i++)
+            if (integer)
             {
-                result[i] = (double)rand.Next();
+                result[i] = rand.NextInt64();
             }
-        }
-        else
-        {
-            for (int i = 0; i < length; i++)
-            {                         
+            else
+            {
                 result[i] = rand.NextDouble();
             }
         }
@@ -158,8 +165,7 @@ public static class VectorAlgebra
     }
 
     // Returns vector "<v0,v1,v2,...,vn>"
-    // Also prints to console if flag is set to true
-    public static string PrintVector(double[] vector, bool console = false)
+    public static string ToString(double[] vector)
     {
         if (vector == null || vector.Length == 0)
         {
@@ -169,29 +175,26 @@ public static class VectorAlgebra
         var length = vector.Length;
 
         var sb = new StringBuilder();
-        sb.Append("<");
+        sb.Append('<');
         for (int i = 0; i < length - 1; i++)
-        {                
+        {
             sb.Append(vector[i].ToString());
-            sb.Append(",");
+            sb.Append(',');
         }
 
-        // am doing this outside of the for loop to avoid checking 
-        // for this case since its always last
         sb.Append(vector[length - 1].ToString());
-        sb.Append(">");
-
-        if (console)
-            Console.WriteLine(sb);
+        sb.Append('>');
 
         return sb.ToString();
     }
 
+    
+
     public static double[] Round(double[] vector, int? precision = null)
     {
-        precision = precision ?? Global.Precision;
+        precision ??= Global.Precision;
 
-        if ((vector?.Length ?? 0) == 0)
+        if ((vector == null) || (vector.Length == 0))
         {
             return Array.Empty<double>();
         }
@@ -202,5 +205,27 @@ public static class VectorAlgebra
         }
 
         return vector;
+    }
+
+    public static bool Equal(double[] vector1, double[] vector2, int precision)
+    {
+        if (vector1 is null|| vector2 is null || vector1.Length != vector2.Length)
+        {
+            throw new ArgumentException();
+        }
+
+        for (int i = 0; i < vector1.Length; i++)
+        {
+            // round both values
+            double value1 = Math.Round(vector1[i], precision);
+            double value2 = Math.Round(vector2[i], precision);
+
+            if (!double.Equals(value1, value2))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

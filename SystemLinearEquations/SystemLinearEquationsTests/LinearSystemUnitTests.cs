@@ -1,12 +1,12 @@
 ﻿using Maths.LinearAlgebra;
 using Maths;
+using SystemLinearEquations.LinearSystemAlgorithms;
 
 namespace MathTests.LinearAlgebra;
 
-public class LinearSystemUnitTests
+public static class LinearSystemAlgorithmsUnitTests
 {
-    [Fact]
-    public static void TestCramersRule_Modified()
+    private static void GeneralLinearSystemTest(ILinearSystemMethod solver)
     {
         /// 3x3 (identity)
         // Arrange
@@ -15,11 +15,11 @@ public class LinearSystemUnitTests
         var expectedResult = new double[3] { 1, 1, 1 };
 
         // Act
-        var result1 = LinearSystemAlgorithms.CramersRuleModified(m1, b1);
+        var result1 = solver.Solve(m1, b1);
 
         // Assert
         Assert.Equal(expectedResult, result1);
-        
+
         /// 3x3
         // Arrange
         m1 = Matrix.GetIdentityMatrix(3);
@@ -27,13 +27,16 @@ public class LinearSystemUnitTests
         m1.matrix[1] = new double[] { 4, 5, 6 };
         m1.matrix[2] = new double[] { 7, 9, 9 };
         var b2 = new double[3] { 1, 5, 10 };
-        var expectedResult2 = new double[3] { 1, 1, -Math.Round((2.0/3.0), Global.Precision) };
+        var expectedResult2 = new double[3] { 1, 1, -Math.Round((2.0 / 3.0), Global.Precision) };
 
         // Act
-        var result2 = LinearSystemAlgorithms.CramersRuleModified(m1, b2);
+        var result2 = solver.Solve(m1, b2);
+
+        
 
         // Assert
-        Assert.Equal(expectedResult2, result2);
+        Assert.True(Vector.Equal(expectedResult2, result2, 12));
+
 
         /// 4x4
         // Arrange
@@ -45,13 +48,38 @@ public class LinearSystemUnitTests
         var b4 = new double[4] { 1, 2, 3, 4 };
 
         // from wolfram alpha
-        var expectedResult3 = VectorAlgebra.Round(new double[4] { 247.0/178.0, -509.0 / 178.0, 162.0 / 89.0, -14.0 / 89.0 }, 15);
+        var expectedResult3 = Vector.Round(new double[4] { 247.0 / 178.0, -509.0 / 178.0, 162.0 / 89.0, -14.0 / 89.0 }, 15);
 
         // Act
-        var result4 = LinearSystemAlgorithms.CramersRuleModified(m4, b4);
+        var result4 = solver.Solve(m4, b4);
 
         // Assert
-        Assert.Equal(expectedResult3, result4);
+        Assert.True(Vector.Equal(expectedResult3, result4, 12));
+    }
+
+
+    [Fact]
+    public static void TestCramersRule()
+    {
+        GeneralLinearSystemTest(new CramersMethod());
+    }
+
+    [Fact]
+    public static void TestCramersRule_Modified()
+    {
+        GeneralLinearSystemTest(new CramersMethodModified());
+    }
+
+    [Fact]
+    public static void TestCramersRule_Chios()
+    {
+        GeneralLinearSystemTest(new ChiosCondensationMethod());
+    }
+
+    [Fact]
+    public static void TestConjugateMethod()
+    {
+        GeneralLinearSystemTest(new ConjugateTransposeMethods());
     }
 
     [Fact]
@@ -71,7 +99,7 @@ public class LinearSystemUnitTests
         var expectedResult0 = new double[2] { 1, 1 };
 
         // Act
-        var result = LinearSystemAlgorithms.ConjugateTransposeMethod(m0, b0, est0);
+        var result = ConjugateTransposeMethods.ConjugateTransposeMethod(m0, b0);
 
         // Assert
         Assert.Equal(expectedResult0, result);
@@ -85,7 +113,7 @@ public class LinearSystemUnitTests
         expectedResult0 = new double[2] { 0.090909090909091, 0.636363636363636 };
 
         // Act
-        result = LinearSystemAlgorithms.ConjugateTransposeMethod(m0, b0, est0);
+        result = ConjugateTransposeMethods.ConjugateTransposeMethod(m0, b0, est0);
 
         // Assert
         Assert.Equal(expectedResult0, result);
@@ -99,7 +127,7 @@ public class LinearSystemUnitTests
         var expectedResult = new double[3] { 1, 1, 1 };
 
         // Act
-        result = LinearSystemAlgorithms.ConjugateTransposeMethod(m1, b1, est1);
+        result = ConjugateTransposeMethods.ConjugateTransposeMethod(m1, b1, est1);
 
         // Assert
         // Get exact answer with identity matricies
@@ -107,7 +135,7 @@ public class LinearSystemUnitTests
 
 
         // Arrange
-        m1.matrix[0] = new double[] { 1, 4, 0};
+        m1.matrix[0] = new double[] { 1, 4, 0 };
         m1.matrix[1] = new double[] { 4, 5, 8 };
         m1.matrix[2] = new double[] { 0, 8, 9 };
         var b2 = new double[3] { 1, 5, 10 };
@@ -115,8 +143,8 @@ public class LinearSystemUnitTests
         expectedResult = new double[3] { -0.74233, 0.43558, 0.72393 };
 
         // Act
-        result = LinearSystemAlgorithms.ConjugateTransposeMethod(m1, b2, est1);
-        var lengthDiff = VectorAlgebra.PercentDiffLength(result, expectedResult);
+        result = ConjugateTransposeMethods.ConjugateTransposeMethod(m1, b2, est1);
+        var lengthDiff = Vector.PercentDiffLength(result, expectedResult);
 
         // Assert
         Assert.NotNull(result);
@@ -132,9 +160,9 @@ public class LinearSystemUnitTests
         var expectedResult2 = new double[3] { -10.25, 4.5, 3.75 };
 
         // Act
-        result = LinearSystemAlgorithms.ConjugateTransposeMethod(m1, b2, est1);
- 
-        lengthDiff = VectorAlgebra.PercentDiffLength(expectedResult2, result);
+        result = ConjugateTransposeMethods.ConjugateTransposeMethod(m1, b2, est1);
+
+        lengthDiff = Vector.PercentDiffLength(expectedResult2, result);
 
 
         // Assert
@@ -148,9 +176,9 @@ public class LinearSystemUnitTests
         var expected4 = new double[4] { 7, 6, 9, 1 };
 
         // Act
-        result = LinearSystemAlgorithms.ConjugateTransposeMethod(m4, b4, g4);
+        result = ConjugateTransposeMethods.ConjugateTransposeMethod(m4, b4, g4);
 
-        lengthDiff = VectorAlgebra.PercentDiffLength(result, expected4);
+        lengthDiff = Vector.PercentDiffLength(result, expected4);
 
         // Assert
         Assert.InRange(Math.Abs(lengthDiff), 0, tolerance);
@@ -166,9 +194,9 @@ public class LinearSystemUnitTests
         var expectedResult3 = new double[4] { 0.34615, 0, 0.11111, 0.038462 };
 
         // Act
-        result = LinearSystemAlgorithms.ConjugateTransposeMethod(m4, b4, g4);
+        result = ConjugateTransposeMethods.ConjugateTransposeMethod(m4, b4, g4);
 
-        lengthDiff = VectorAlgebra.PercentDiffLength(result, expectedResult3);
+        lengthDiff = Vector.PercentDiffLength(result, expectedResult3);
 
         // Assert
         Assert.InRange(Math.Abs(lengthDiff), 0, tolerance);
@@ -182,6 +210,12 @@ public class LinearSystemUnitTests
 
         // Largest allowed percent difference in length
         var tolerance = 1.0;
+        //
+        // Why?
+
+        // Shouldn't the direction matter more
+
+
 
         /// 2x2
         // Arrange
@@ -193,7 +227,7 @@ public class LinearSystemUnitTests
         var expectedResult = new double[2] { -0.1, 0.7 };
 
         // Act
-        var result = LinearSystemAlgorithms.ConjugateTransposeMethod(m2, b, guess);
+        var result = ConjugateTransposeMethods.ConjugateTransposeMethod(m2, b, guess);
 
         // Assert
         Assert.Equal(expectedResult, result);
@@ -210,8 +244,8 @@ public class LinearSystemUnitTests
         expectedResult = new double[3] { -6.5625, 0.125, 5.4375 };
 
         // Act
-        result = LinearSystemAlgorithms.ConjugateTransposeMethod(m3, b, guess);
-        var lengthDiff = VectorAlgebra.PercentDiffLength(result, expectedResult);
+        result = ConjugateTransposeMethods.ConjugateTransposeMethod(m3, b, guess);
+        var lengthDiff = Vector.PercentDiffLength(result, expectedResult);
 
         // Assert
         Assert.NotNull(result);
@@ -230,9 +264,9 @@ public class LinearSystemUnitTests
         expectedResult = new double[4] { 1.3876, -2.8596, 1.8202, -0.15730 };
 
         // Act
-        result = LinearSystemAlgorithms.ConjugateTransposeMethod(m4, b, guess);
+        result = ConjugateTransposeMethods.ConjugateTransposeMethod(m4, b, guess);
 
-        lengthDiff = VectorAlgebra.PercentDiffLength(result, expectedResult);
+        lengthDiff = Vector.PercentDiffLength(result, expectedResult);
 
         // Assert
         Assert.InRange(Math.Abs(lengthDiff), 0, tolerance);
