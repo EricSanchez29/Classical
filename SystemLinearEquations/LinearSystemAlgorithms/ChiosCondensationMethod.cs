@@ -146,6 +146,8 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
 
         public double[] Solve(Matrix A, double[] b)
         {
+
+
             throw new NotImplementedException();
         }
     }

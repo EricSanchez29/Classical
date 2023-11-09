@@ -59,28 +59,28 @@ public static class LinearSystemAlgorithmsUnitTests
 
 
     [Fact]
+    public static void TestCramersRule()
+    {
+        GeneralLinearSystemTest(new CramersMethod());
+    }
+
+    [Fact]
     public static void TestCramersRule_Modified()
     {
         GeneralLinearSystemTest(new CramersMethodModified());
     }
 
-    //[Fact]
-    //public static void TestCramersRule_Chios()
-    //{
-    //    GeneralLinearSystemTest(new ChiosCondensationMethod());
-    //}
+    [Fact]
+    public static void TestCramersRule_Chios()
+    {
+        GeneralLinearSystemTest(new ChiosCondensationMethod());
+    }
 
     [Fact]
     public static void TestConjugateMethod()
     {
         GeneralLinearSystemTest(new ConjugateTransposeMethods());
     }
-
-    //[Fact]
-    //public static void TestBiConjugateMethod()
-    //{
-
-    //}
 
     [Fact]
     public static void TestConjugateGradientMethod()

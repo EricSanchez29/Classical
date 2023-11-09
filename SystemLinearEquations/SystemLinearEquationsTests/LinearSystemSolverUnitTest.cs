@@ -9,6 +9,7 @@ namespace SystemLinearEquationsTests
     {
         [Theory]
         // these precisions aren't always correct, seems like there is a range of possibilities
+        // maybe I shouldn't use randomly generated data for unit test =P
         [InlineData(3, 14)]
         [InlineData(10, 11)] // sometiems 12 or 13
         [InlineData(15, 12)]
