@@ -1,36 +1,14 @@
-﻿using Maths.LinearAlgebra;
+﻿using Maths;
+using Maths.LinearAlgebra;
 
 namespace SystemLinearEquations.LinearSystemAlgorithms
 {
-    //
-    // WIP, Don't use right now
-    //
     public class ChiosCondensationMethod : ILinearSystemMethod
     {
         /// Chios Extended Condensation Method
         /// (Depends on Cramer's Rule Modified)
-        
-        // adapted from Habgood & Arel (2011)
-        public static double[] ChiosExtendedCondensationMethod(Matrix A, double[] b)
-        {
-            //For now only handle square matricies
-            if (!A.IsSquare)
-            {
-                throw new ArgumentException("Matrix A must be a square");
-            }
+        /// adapted from Habgood & Arel (2011)
 
-            if (A.Dimensions.Row != b.Length)
-            {
-                throw new ArgumentException("Number of rows in A doesn't equal length of b");
-            }
-
-            //
-
-
-
-            // these inputs might not be right
-            return ChiosExtendedCondensationMethodHelper(A, b, b.Length, b.Length);
-        }
 
         /// <summary>
         /// 
@@ -43,6 +21,11 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
         /// <exception cref="Exception"></exception>
         private static double[] ChiosExtendedCondensationMethodHelper(Matrix A, double[] b, int currentSize, int mirrorSize)
         {
+            if (A.Dimensions.Column <= 6)
+            {
+                return CramersMethod(A, b);
+            }
+
             var result = new double[mirrorSize];
 
             // Condensation step size
@@ -126,19 +109,35 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
                 // Maybe this becomes more worth while at n == 5 or 6,
                 // which means less condesation steps?
 
-
-
-
-                return null;// CramersRuleModified(A, b);
+                // Can't reuse CramersMethod code because I don't want an object
+                // Would rather just have a static implementation, perhaps even within this file
+                //
+                //return CramersMethodModified.Solve(A, b);
+                return CramersMethod(A, b);
             }
             // Continue condensation steps
             else
             {
                 var mirrorA = A.Mirror();
 
-                ChiosExtendedCondensationMethodHelper(A, b, currentSize / 2, 1);
+                var answer1 = ChiosExtendedCondensationMethodHelper(A, b, currentSize / 2, 1);
 
-                ChiosExtendedCondensationMethodHelper(mirrorA, b, currentSize / 2, 1);
+                var answer2 = ChiosExtendedCondensationMethodHelper(mirrorA, b, currentSize / 2, 1);
+
+                if (answer1.Length + answer2.Length != result.Length)
+                {
+                    throw new Exception();
+                }
+
+                for (int i = 0; i < answer1.Length; i++)
+                {
+                    result[i] = answer1[i];
+                }
+
+                for (int i = answer1.Length; i < answer2.Length; i++)
+                {
+                    result[i] = answer2[i];
+                }
             }
 
             return result;
@@ -146,9 +145,76 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
 
         public double[] Solve(Matrix A, double[] b)
         {
+            //For now only handle square matricies
+            if (!A.IsSquare)
+            {
+                throw new ArgumentException("Matrix A must be a square");
+            }
+
+            if (A.Dimensions.Row != b.Length)
+            {
+                throw new ArgumentException("Number of rows in A doesn't equal length of b");
+            }
 
 
-            throw new NotImplementedException();
+            // these inputs might not be right
+            return ChiosExtendedCondensationMethodHelper(A, b, b.Length, b.Length);
+        }
+
+        // this is reused code, bad
+        public static double[] CramersMethod(Matrix A, double[] b)
+        {
+            // a11X1 + a12X2 + ... + a1nXn = b1
+            // a21x1 + a22X2 + ... + a2nXn = b2
+            // ..
+            // an1X1 + an2X2 + ... + annXn = bn
+            // Ax = b
+
+            // where the A matrix is this.matrix
+
+            // Xj = Dj/D
+            // D = det A
+
+            //          a11 a12 ... a1j-1 b1 a1j+1 a1n
+            // Dj = det a21 a22 ... a2j-1 b2 a2j+1 a2n
+            //          a31 a32 ... a3j-1 b3 a3j+1 a3n
+            //          ...
+            var determinant = A.GetDeterminant(false);
+
+            // Am about to divide by the original determinant of matrix A
+            // making sure I don't divide by zero
+            if (double.IsNaN(determinant) || determinant == 0.0)
+            {
+                throw new Exception();
+            }
+
+            var result = new double[A.Dimensions.Column];
+
+            for (int j = 0; j < A.Dimensions.Column; j++)
+            {
+                var originalColumn = new double[A.Dimensions.Column];
+
+                // substitute the b column vector for this(j) column
+                for (int i = 0; i < A.Dimensions.Row; i++)
+                {
+                    originalColumn[i] = A.matrix[i][j];
+                    A.matrix[i][j] = b[i];
+                }
+
+                // calculate Xj = Dj/D
+                // need to add 1 because of zero index
+                var Dj = A.GetDeterminant(false);
+
+                result[j] = Math.Round(Dj / determinant, Global.Precision); ;
+
+                // replace original column vector
+                for (int i = 0; i < A.Dimensions.Row; i++)
+                {
+                    A.matrix[i][j] = originalColumn[i];
+                }
+            }
+
+            return result;
         }
     }
 }
