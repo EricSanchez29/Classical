@@ -21,7 +21,9 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
         /// <exception cref="Exception"></exception>
         private static double[] ChiosExtendedCondensationMethodHelper(Matrix A, double[] b, int currentSize, int mirrorSize)
         {
-            if (A.Dimensions.Column <= 6)
+            const int sizeLimit = 6;
+
+            if (A.Dimensions.Column <= sizeLimit)
             {
                 return CramersMethod(A, b);
             }
@@ -34,7 +36,7 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
             // reusable matrix must be the same size as input A
             // as it contains all minor dets for every position in A
             double[][] reusableminor = new double[currentSize][];
-            for (int i = 0; i < currentSize; i++)
+            for (int i = 0;  i < currentSize; i++)
             {
                 reusableminor[i] = new double[currentSize];
             }
@@ -100,19 +102,8 @@ namespace SystemLinearEquations.LinearSystemAlgorithms
                 currentSize -= m;
             }
             // End condensation, solve matrix
-            if (currentSize == 6)
+            if (currentSize == sizeLimit)
             {
-                // solve for the subset of unknowns assigned
-                // x[] = cramersrule[b]
-
-                // Should I reuse my old code?
-                // Maybe this becomes more worth while at n == 5 or 6,
-                // which means less condesation steps?
-
-                // Can't reuse CramersMethod code because I don't want an object
-                // Would rather just have a static implementation, perhaps even within this file
-                //
-                //return CramersMethodModified.Solve(A, b);
                 return CramersMethod(A, b);
             }
             // Continue condensation steps
