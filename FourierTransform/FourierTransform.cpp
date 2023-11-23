@@ -27,6 +27,60 @@ int32_t* FourierTransform::DFT(uint16_t* inputArray)
 	return real_result;
 }
 
+double* FourierTransform::DFT(double* input_TimeSpace)
+{
+	double static realResult[256];
+
+	double imag_result[256];
+
+	for (uint16_t k = 0; k < 256; k++)
+	{
+		float realValue = 0;
+
+		float imagValue = 0;
+
+		for (uint16_t m = 0; m < 256; m++)
+		{
+			realValue = realValue + input_TimeSpace[m] * cos((2 * M_PI * m * k) / 256);
+			imagValue = imagValue + input_TimeSpace[m] * sin((2 * M_PI * m * k) / 256);
+		}
+
+		realResult[k] = realValue;
+		imag_result[k] = imagValue;
+	}
+
+	return realResult;
+}
+
+int FourierTransform::GetPeakFrequency(double* freqArray)
+{
+	uint8_t peakFreq = 0;
+
+	// finds the first peak frequency, might discover multiple peaks in the process, 
+	// return the smaller frequency (larger ones are possible overtones)
+	double peakValue = freqArray[0];
+
+	int peakCount = 0;
+
+	// find largest value starting from index 0, ignore subsequent equivalent values (repeat peaks)
+	for (uint16_t i = 1; i < 256; i++)
+	{
+		double currentValue = abs(freqArray[i]);
+
+		if (peakValue < currentValue)
+		{
+			peakValue = currentValue;
+			peakFreq = i;
+		}
+	}
+
+	return peakFreq;
+}
+
+double* FourierTransform::FFT(double* input_TimeSpace)
+{
+	return nullptr;
+}
 
 uint8_t FourierTransform::GetPeakFrequency(int32_t* freqSpace)
 {

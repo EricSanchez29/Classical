@@ -128,23 +128,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FourierTransform.cpp" />
+    <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="SignalGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FourierTransform.h" />
+    <ClInclude Include="Helper.h" />
     <ClInclude Include="SignalGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.32.31326\include\cmath" />
     <None Include="C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.32.31326\include\cstdint" />
     <None Include="C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.32.31326\include\iostream" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="A_sample.txt" />
-    <Text Include="A_sample2.txt" />
-    <Text Include="C_sample.txt" />
-    <Text Include="C_sample2.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

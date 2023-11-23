@@ -24,6 +24,9 @@
     <ClCompile Include="SignalGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FourierTransform.h">
@@ -32,24 +35,13 @@
     <ClInclude Include="SignalGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.32.31326\include\cmath" />
     <None Include="C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.32.31326\include\cstdint" />
     <None Include="C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.32.31326\include\iostream" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="A_sample.txt">
-      <Filter>Source Files</Filter>
-    </Text>
-    <Text Include="C_sample.txt">
-      <Filter>Source Files</Filter>
-    </Text>
-    <Text Include="A_sample2.txt">
-      <Filter>Source Files</Filter>
-    </Text>
-    <Text Include="C_sample2.txt">
-      <Filter>Source Files</Filter>
-    </Text>
   </ItemGroup>
 </Project>

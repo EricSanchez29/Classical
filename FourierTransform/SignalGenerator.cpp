@@ -37,7 +37,57 @@ uint16_t* SignalGenerator::GetPositiveWaveForm(uint16_t cycles, double amplitude
 	return waveform;
 }
 
-int16_t* SignalGenerator::GetWaveForm(uint16_t cycles, double amplitude)
+double* SignalGenerator::GetCosine(int cycles, double amplitude)
 {
-	return nullptr;
+	double static waveform[256];
+
+	// for waveform index
+	uint8_t offset = 0;
+
+	// freq == 1 / (cyclelength * Time between measurements)
+	uint16_t cycleLength = 256 / cycles;
+
+	for (uint16_t i = 1; i <= cycles; i++)
+	{
+		for (uint16_t n = 1; n <= cycleLength; n++)
+		{
+			double num = amplitude*sin((2 * M_PI * n) / cycleLength);
+
+			//
+			if (num > 0)
+			{
+				if (num < 0.00001)
+				{
+					num = 0;
+				}
+			}
+			else
+			{
+				if (num > -0.00001)
+				{
+					num = 0;
+				}
+			}
+			
+
+			waveform[n - 1 + offset] = num;
+		}
+
+		offset = offset + cycleLength;
+	}
+
+	return waveform;
 }
+
+double* SignalGenerator::AddWaves(double* wave1, double* wave2)
+{
+	double static sum[256];
+
+	for (int i = 0; i < 256; i++)
+	{
+		sum[i] = wave1[i] + wave2[i];
+	}
+
+	return sum;
+}
+

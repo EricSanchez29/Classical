@@ -8,6 +8,8 @@ class SignalGenerator
 
 		static uint16_t* GetPositiveWaveForm(uint16_t cycles, double amplitude);
 
-		static int16_t* GetWaveForm(uint16_t cycles, double amplitude);
+		static double* GetCosine(int cycles, double amplitude);
+
+		static double* AddWaves(double* wave1, double* wave2);
 };
 
