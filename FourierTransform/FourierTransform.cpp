@@ -1,4 +1,8 @@
 #include "FourierTransform.h"
+#include <map>
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
 int32_t* FourierTransform::DFT(uint16_t* inputArray)
 {
@@ -75,6 +79,55 @@ int FourierTransform::GetPeakFrequency(double* freqArray)
 	}
 
 	return peakFreq;
+}
+
+bool cmp(std::pair<int, double>& a,
+	std::pair<int, double>& b)
+{
+	return a.second < b.second;
+}
+
+int* FourierTransform::GetOrderedFrequencies(double* freqArray)
+{
+	int static resultArray[256];
+
+	// 256 element array
+	// return array of indexes for biggest to smallest array value
+
+	//naive implementation
+	// find biggest value by looping through entire array
+	// find next biggest value by looping through entire list again
+	// ... 
+	// O(n^n)
+
+	// better to make a vector pair
+	// populate it with index/value pairs
+	// sort by value, largest to smallest
+
+	std::vector<std::pair<int, double> > vectorPair;
+	
+	// populate
+	for (int i = 0; i < 256; i++)
+	{
+		vectorPair.push_back(std::make_pair(i, freqArray[i]));
+	}
+
+	// sort in reverse order, will access last element and pop_back
+	std::sort(vectorPair.begin(), vectorPair.end(), cmp);
+
+	// print, remove later
+	/*for (auto& it : vectorPair) {
+		std::cout << it.first << "->" << it.second << std::endl;
+	}*/
+	
+	// create array
+	for (int i = 0; i < 256; i++)
+	{
+		resultArray[i] = vectorPair.back().first;
+		vectorPair.pop_back();
+	}
+
+	return resultArray;
 }
 
 double* FourierTransform::FFT(double* input_TimeSpace)

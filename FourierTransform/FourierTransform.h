@@ -19,7 +19,7 @@ class FourierTransform
         static int GetPeakFrequency(double* freqArray);
         // I want to know how many overtones are present
         // to further analyze the accuracy of Transform
-        //static int* GetOrderedFrequencies(double* freqArray);
+        static int* GetOrderedFrequencies(double* freqArray);
 
     private:
         static int16_t* fft_helper(uint16_t* input);

@@ -11,17 +11,15 @@ int main()
 
     for (uint8_t i = 1; i < 2; i++)
     {
-        double* signal;
-
-        signal = SignalGenerator::GetCosine(2, 100);
+        double* signal = SignalGenerator::GetCosine(4, 100);
 
         Helper::PrintArray(signal);
 
-        double* testSignal = SignalGenerator::GetCosine(4, 100);
+        //double* testSignal = SignalGenerator::GetCosine(4, 100);
 
-        signal = SignalGenerator::AddWaves(signal, testSignal);
+        //signal = SignalGenerator::AddWaves(signal, testSignal);
 
-        Helper::PrintArray(signal);
+        //Helper::PrintArray(signal);
 
         double* signalFreq = FourierTransform::DFT(signal);
 
@@ -33,6 +31,11 @@ int main()
         std::cout << "peak freq: ";
         std::cout << peak;
         std::cout << "\n";
+
+
+        int* a = FourierTransform::GetOrderedFrequencies(signalFreq);
+        Helper::PrintArray(a);
+
 
         //for (int j = 0; j < 256; j++)
         //{
